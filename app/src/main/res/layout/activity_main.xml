@@ -29,6 +29,7 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:background="@color/biru_winwin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_slidekiri2"
@@ -48,14 +49,14 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_home" />
+                        android:src="@drawable/home" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/home"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -105,7 +106,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/statuspinjaman"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -123,14 +124,14 @@
                     <ImageView
                         android:layout_width="25sp"
                         android:layout_height="25sp"
-                        android:src="@drawable/r_kode_bayar" />
+                        android:src="@drawable/rqkues_bayar_sebagian" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="17dp"
                         android:text="@string/bayar"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -148,14 +149,14 @@
                     <ImageView
                         android:layout_width="25sp"
                         android:layout_height="25sp"
-                        android:src="@drawable/r_bayar_sebagian" />
+                        android:src="@drawable/rekues_kode_bayar" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="17dp"
                         android:text="@string/request"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -180,7 +181,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="17dp"
                         android:text="@string/janjibayar"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -197,14 +198,14 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_history" />
+                        android:src="@drawable/histori_pengajuan" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/history_pengajuan"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -245,14 +246,14 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_chatting" />
+                        android:src="@drawable/chat" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/chat"
-                        android:textColor="@color/biru" />
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 
@@ -268,14 +269,14 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_how_tow_work" />
+                        android:src="@drawable/how_it_work" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/how_it_work"
-                        android:textColor="@color/biru" />
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 
@@ -291,7 +292,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_logout" />
+                        android:src="@drawable/logout" />
 
                     <TextView
                         android:id="@+id/txLogout"
@@ -299,7 +300,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/login"
-                        android:textColor="@color/biru" />
+                        android:textColor="@android:color/black" />
 
                 </LinearLayout>
 

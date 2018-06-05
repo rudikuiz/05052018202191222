@@ -294,13 +294,14 @@
                 android:id="@+id/btLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="100dp"
-                android:layout_marginLeft="100dp"
-                android:layout_alignParentTop="true"
-                android:text="@string/login"
-                android:textColor="@android:color/white"
+                android:layout_marginLeft="110dp"
+                android:layout_marginRight="110dp"
                 android:background="@drawable/rounded_view_biru_login"
-                android:layout_centerHorizontal="true" />
+                android:minHeight="10dp"
+                android:padding="10dp"
+                android:text="@string/login"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/text"

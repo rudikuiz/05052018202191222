@@ -315,4 +315,10 @@
     <string name="takefoto">Take Foto</string>
     <string name="tidakditemukan">Data tidak ada</string>
     <string name="permission">Permission</string>
+    <string name="rt">RT</string>
+    <string name="rw">RW</string>
+    <string name="kodearea">Kode Area</string>
+    <string name="no_hp_alternatif">No HP Alternatif</string>
+    <string name="upload_selfi">Upload Foto Selfi Anda dengan memegang KTP</string>
+    
 </resources>
