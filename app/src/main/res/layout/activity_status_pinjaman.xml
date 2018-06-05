@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="metis.winwin.StatusPinjaman">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:contentInsetEnd="0dp"
+        app:contentInsetStart="0dp"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/btBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:src="@drawable/ic_back_grey" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/statuspinjaman"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/main_big_text" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/lyDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/border"
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        android:paddingTop="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingBottom="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/noapl" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etNoApl"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="-" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:paddingBottom="5dp"
+                android:text="@string/pinjaman" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etPinjaman"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:paddingBottom="5dp"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:text="@string/bunga" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etBunga"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:paddingBottom="5dp"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:text="@string/perpanjangan" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etPerpanjangan"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="Rp. 0,-" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:paddingBottom="5dp"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:text="@string/denda" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etDenda"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="Rp. 0,-"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:paddingBottom="5dp"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:text="@string/totaltag" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etTotalTag"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:paddingBottom="5dp"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:text="@string/jangkapinj" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etJangka"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingBottom="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/jatuh_tempo" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etTempo"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingBottom="5dp"
+                android:paddingLeft="20dp"
+                android:text="@string/status" />
+
+            <TextView
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:textStyle="bold"
+                android:text=":" />
+
+            <TextView
+                android:id="@+id/etStatus"
+                android:textColor="@color/biru_border"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textStyle="bold"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="XXXXXXX" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/lyLunas"
+        android:layout_margin="30dp"
+        android:padding="20dp"
+        android:background="@drawable/border"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txLunas"
+            android:textColor="@color/biru_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</LinearLayout>

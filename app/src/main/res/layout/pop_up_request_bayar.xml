@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/asf"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/centang" />
+
+    <TextView
+        android:id="@+id/dsaf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/asf"
+        android:layout_marginTop="10dp"
+        android:text="reques Janji bayar sudah diproses harap membayar sesuai dengan rupiah yang sudah tertera"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textSize="17sp" />
+
+    <Button
+        android:id="@+id/btSelesai"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/dsaf"
+        android:layout_centerHorizontal="true"
+        android:text="selesai"
+        android:textColor="@android:color/white"
+        android:background="@drawable/ripple_button"/>
+</RelativeLayout>

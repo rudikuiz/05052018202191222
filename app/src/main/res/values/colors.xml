@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ffffff</color>
+    <color name="colorPrimaryDark">#e6e6e6</color>
+    <color name="colorAccent">#000000</color>
+    <color name="biru">#3899c6</color>
+    <color name="biru_gelap">#2d7b9f</color>
+    <color name="biru_border">#007BC7</color>
+    <color name="hijau">#6cbc45</color>
+    <color name="hijau_btn">#ABCF40</color>
+    <color name="orange">#ff8c07</color>
+    <color name="abu_choose">#9b9b9b</color>
+    <color name="abuabu">#7F7F7F</color>
+    <color name="abu_et">#E6E6E6</color>
+    <color name="biru_winwin">#1559A0</color>
+</resources>

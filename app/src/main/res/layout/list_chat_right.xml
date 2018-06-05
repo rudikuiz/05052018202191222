@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/txNama"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Customer"
+                    android:textColor="@color/biru" />
+
+                <TextView
+                    android:gravity="right"
+                    android:minWidth="90dp"
+                    android:id="@+id/txMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txNama"
+                    android:text="Lorem"
+                    android:textColor="@android:color/black" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/txMessage"
+                    android:layout_alignRight="@+id/txMessage"
+                    android:layout_below="@+id/txMessage"
+                    android:layout_marginTop="1dp"
+                    android:gravity="right|center_vertical"
+                    android:orientation="horizontal">
+
+
+                    <ImageView
+                        android:id="@+id/imgStatus"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginRight="2dp"
+                        android:src="@drawable/ic_chat_pending" />
+
+                    <TextView
+                        android:id="@+id/txTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 Oct 17, 10:23"
+                        android:textSize="@dimen/second_text" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
+</RelativeLayout>
