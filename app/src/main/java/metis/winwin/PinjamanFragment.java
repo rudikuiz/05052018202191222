@@ -3,10 +3,7 @@ package metis.winwin;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -77,6 +74,8 @@ public class PinjamanFragment extends Fragment {
     TextView txPeriode;
     @Bind(R.id.text)
     TextView text;
+    @Bind(R.id.btLogin)
+    Button btLogin;
 
     private double sJumlah, total_byr, sBunga;
     private int sPeriode;
@@ -199,7 +198,6 @@ public class PinjamanFragment extends Fragment {
     }
 
 
-
     private void ConvertTgl(int adds) {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -219,7 +217,7 @@ public class PinjamanFragment extends Fragment {
         ButterKnife.unbind(this);
     }
 
-    @OnClick({R.id.txTanggal, R.id.btPinjam})
+    @OnClick({R.id.txTanggal, R.id.btPinjam, R.id.btLogin})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txTanggal:
@@ -231,6 +229,9 @@ public class PinjamanFragment extends Fragment {
                 formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
                 formPengajuan.putExtra("total_byr", total_byr + "");
                 startActivity(formPengajuan);
+                break;
+            case R.id.btLogin:
+                startActivity(new Intent(mActivity, Login.class));
                 break;
         }
     }
@@ -257,6 +258,7 @@ public class PinjamanFragment extends Fragment {
             }
 
             CheckDisetujui();
+            btLogin.setVisibility(View.GONE);
         }
 
         txBungaPersen.setText("( Bunga " + sBunga + " % / Hari )");
@@ -360,8 +362,6 @@ public class PinjamanFragment extends Fragment {
         txTotal.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(total_byr + ""));
 
     }
-
-
 
 
     @Override

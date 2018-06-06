@@ -1,5 +1,7 @@
 package metis.winwin;
 
+import android.*;
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
@@ -85,7 +87,6 @@ import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
 import metis.winwin.Utils.FileUploader;
 import metis.winwin.Utils.GlobalToast;
-import metis.winwin.Utils.Hash2Json;
 import metis.winwin.Utils.HttpsTrustManager;
 import metis.winwin.Utils.MediaProcess;
 import metis.winwin.Utils.SessionManager;
@@ -320,6 +321,30 @@ public class FormPengajuan extends AppCompatActivity {
     LinearLayout lyKtp;
     @Bind(R.id.lyRek)
     LinearLayout lyRek;
+    @Bind(R.id.txRT)
+    AutoCompleteTextView txRT;
+    @Bind(R.id.ilRT)
+    TextInputLayout ilRT;
+    @Bind(R.id.txRW)
+    AutoCompleteTextView txRW;
+    @Bind(R.id.ilRW)
+    TextInputLayout ilRW;
+    @Bind(R.id.txKodeArea)
+    EditText txKodeArea;
+    @Bind(R.id.ilKodeArea)
+    TextInputLayout ilKodeArea;
+    @Bind(R.id.txKotaP)
+    EditText txKotaP;
+    @Bind(R.id.ilKotaP)
+    TextInputLayout ilKotaP;
+    @Bind(R.id.btSelfiTake)
+    Button btSelfiTake;
+    @Bind(R.id.txSelfi)
+    TextView txSelfi;
+    @Bind(R.id.imgSelfi)
+    ImageView imgSelfi;
+    @Bind(R.id.lySelfi)
+    LinearLayout lySelfi;
 
     private ProgressDialog progressDialog;
     private ArrayList<View> viewList;
@@ -1390,6 +1415,8 @@ public class FormPengajuan extends AppCompatActivity {
                 multipart.addFormField("tgl_lahir", DateTool.changeFormat(txTglLahir.getText().toString(), "dd MMM yyyy", "MM/dd/yyyy"));
                 multipart.addFormField("kota", txKota.getText().toString());
                 multipart.addFormField("alamat", txAlamatPelanggan.getText().toString());
+                multipart.addFormField("rt", txAlamatPelanggan.getText().toString());
+                multipart.addFormField("rw", txAlamatPelanggan.getText().toString());
                 multipart.addFormField("kelurahan", txKelurahan.getText().toString());
                 multipart.addFormField("kecamatan", txKecamatan.getText().toString());
                 multipart.addFormField("kodepos", txKodePos.getText().toString());
@@ -1876,9 +1903,9 @@ public class FormPengajuan extends AppCompatActivity {
 
                 try {
 
-                    if(mHighQualityImageUri == null){
+                    if (mHighQualityImageUri == null) {
                         GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
-                    }else {
+                    } else {
                         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
                         MediaProcess.bitmapToFile(bmp, outFileKTP.getAbsolutePath(), 30);
                         scale = MediaProcess.scaledBitmap(outFileKTP.getAbsolutePath());
@@ -1899,9 +1926,9 @@ public class FormPengajuan extends AppCompatActivity {
         if (requestCode == TAKE_IMAGE2 && resultCode == RESULT_OK) {
             if (btSlipTake.isClickable()) {
                 try {
-                    if(mHighQualityImageUri == null){
+                    if (mHighQualityImageUri == null) {
                         GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
-                    }else {
+                    } else {
                         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
                         MediaProcess.bitmapToFile(bmp, outFileSLIP.getAbsolutePath(), 30);
                         scale = MediaProcess.scaledBitmap(outFileSLIP.getAbsolutePath());
@@ -1910,7 +1937,6 @@ public class FormPengajuan extends AppCompatActivity {
                         image2 = outFileSLIP.getAbsolutePath();
                         txSlip.setVisibility(View.GONE);
                     }
-
 
 
                 } catch (IOException e) {
@@ -1923,9 +1949,9 @@ public class FormPengajuan extends AppCompatActivity {
         if (requestCode == TAKE_IMAGE3 && resultCode == RESULT_OK) {
             if (btBukuRekTake.isClickable()) {
                 try {
-                    if(mHighQualityImageUri == null){
+                    if (mHighQualityImageUri == null) {
                         GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
-                    }else {
+                    } else {
                         Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
                         MediaProcess.bitmapToFile(bmp, outFileREK.getAbsolutePath(), 30);
                         scale = MediaProcess.scaledBitmap(outFileREK.getAbsolutePath());
@@ -2163,13 +2189,13 @@ public class FormPengajuan extends AppCompatActivity {
     private boolean checkPermission() {
 
         boolean allowed = false;
-        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(FormPengajuan.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(FormPengajuan.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(FormPengajuan.this,
                     new String[]{
-                            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                            android.Manifest.permission.CAMERA
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.CAMERA
                     },
                     PROS_ID);
         } else {

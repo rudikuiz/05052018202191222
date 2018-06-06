@@ -229,7 +229,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="@string/voice_call"
-                        android:textColor="@color/biru"
+                        android:textColor="@android:color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>
