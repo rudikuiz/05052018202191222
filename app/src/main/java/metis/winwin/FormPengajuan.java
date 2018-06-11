@@ -632,9 +632,9 @@ public class FormPengajuan extends AppCompatActivity {
                         txTelpPerusahaan.getParent().requestChildFocus(txTelpPerusahaan, txTelpPerusahaan);
                     }
 
-                    if (txTelpRumah.getText().toString().length() < 8) {
+                    if (txTelpRumah.getText().toString().length() < 6) {
                         err++;
-                        ilTelpRumah.setError("Minimal 8 karakter");
+                        ilTelpRumah.setError("Minimal 6 karakter");
                         txTelpRumah.getParent().requestChildFocus(txTelpRumah, txTelpRumah);
                     }
 

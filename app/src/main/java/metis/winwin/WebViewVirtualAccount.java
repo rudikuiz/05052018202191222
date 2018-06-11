@@ -1,22 +1,26 @@
 package metis.winwin;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.util.Log;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import metis.winwin.Utils.HttpsTrustManager;
 
 public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -25,8 +29,11 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
     @Bind(R.id.swipe)
     SwipeRefreshLayout swipe;
     WebSettings webSettings;
+    @Bind(R.id.editext)
+    EditText editText;
     private ProgressDialog progressDialog;
-
+    private static final String TAG = "WebViewLog";
+    private static String url = "https://hq.ppgwinwin.com/winwin/api/payment/payment_sandbox.php?nominal=100000&nama=amir%20test%20winwin&id=14141";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +44,7 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
         webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.getUseWideViewPort();
-        mWebView.loadUrl("https://hq.ppgwinwin.com/winwin/api/payment/payment_sandbox.php?nominal=100000&nama=amir%20test%20winwin&id=14141");
+
 
         mWebView.setWebViewClient(new WebViewClient() {
 
@@ -74,8 +81,48 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
 //            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
 //                handler.proceed(); // Ignore SSL certificate errors
 //            }
+
+            @Override
+            public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(WebViewVirtualAccount.this);
+                String message = "SSL Certificate error.";
+                switch (error.getPrimaryError()) {
+                    case SslError.SSL_UNTRUSTED:
+                        message = "The certificate authority is not trusted.";
+                        break;
+                    case SslError.SSL_EXPIRED:
+                        message = "The certificate has expired.";
+                        break;
+                    case SslError.SSL_IDMISMATCH:
+                        message = "The certificate Hostname mismatch.";
+                        break;
+                    case SslError.SSL_NOTYETVALID:
+                        message = "The certificate is not yet valid.";
+                        break;
+                }
+                message += " Do you want to continue anyway?";
+
+                builder.setTitle("SSL Certificate Error");
+                builder.setMessage(message);
+                builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.proceed();
+                    }
+                });
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.cancel();
+                        finish();
+                    }
+                });
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         });
 
+        mWebView.loadUrl(url);
 
     }
 
