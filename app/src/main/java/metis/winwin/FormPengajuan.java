@@ -1,6 +1,5 @@
 package metis.winwin;
 
-import android.*;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -87,6 +86,7 @@ import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
 import metis.winwin.Utils.FileUploader;
 import metis.winwin.Utils.GlobalToast;
+import metis.winwin.Utils.Hash2Json;
 import metis.winwin.Utils.HttpsTrustManager;
 import metis.winwin.Utils.MediaProcess;
 import metis.winwin.Utils.SessionManager;
@@ -345,6 +345,12 @@ public class FormPengajuan extends AppCompatActivity {
     ImageView imgSelfi;
     @Bind(R.id.lySelfi)
     LinearLayout lySelfi;
+    @Bind(R.id.txHandPhoneAlter)
+    EditText txHandPhoneAlter;
+    @Bind(R.id.ilHandPhoneAlter)
+    TextInputLayout ilHandPhoneAlter;
+    @Bind(R.id.etKodeTelp)
+    EditText etKodeTelp;
 
     private ProgressDialog progressDialog;
     private ArrayList<View> viewList;
@@ -363,12 +369,11 @@ public class FormPengajuan extends AppCompatActivity {
     private ArrayList<String> bank;
     private ArrayList<KelurahanModel> arrayList;
     private ArrayList<KelurahanModel> mExampleList;
-    OwnProgressDialog loading;
     RecyclerView rvData;
     SwipeRefreshLayout Swipe;
     EditText etCari;
     KelurahanAdapter kelurahanAdapter;
-    int bitmap_size = 50, TAKE_IMAGE = 444, TAKE_IMAGE2 = 555, TAKE_IMAGE3 = 666;
+    int bitmap_size = 50, TAKE_IMAGE = 444, TAKE_IMAGE2 = 555, TAKE_IMAGE3 = 666, TAKE_IMAGE4 = 777;
     Bitmap decoded, decoded2, decoded3;
     String jk;
     private boolean itemSearch, custSearch, isSo;
@@ -378,17 +383,18 @@ public class FormPengajuan extends AppCompatActivity {
     private ArrayList<HashMap> listSatuan;
     private ArrayList<String> listCust;
     private String[] items = {"Camera", "Gallery"};
-    File sdCard, dir, outFileKTP, outFileSLIP, outFileREK;
+    File sdCard, dir, outFileKTP, outFileSLIP, outFileREK, outFileSelfi;
     String fileName;
     private Bitmap bitmap;
     String pathKTP, pathSLIP, pathREK;
     String image1;
     String image2;
     String image3;
+    String image4;
     Calendar calendar;
     private Uri mHighQualityImageUri;
     private final int PROS_ID = 8844;
-
+    OwnProgressDialog loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -399,7 +405,9 @@ public class FormPengajuan extends AppCompatActivity {
         HttpsTrustManager.allowAllSSL();
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+        loading = new OwnProgressDialog(FormPengajuan.this);
 
+        loading.show();
         requestQueue = Volley.newRequestQueue(FormPengajuan.this);
         sessionManager = new SessionManager(FormPengajuan.this);
         viewList = new ArrayList<>();
@@ -472,6 +480,7 @@ public class FormPengajuan extends AppCompatActivity {
                 txKecamatan.setText(listCustDetail.get(i).get("kecamatan").toString());
                 txKelurahan.setText(kel);
                 txKota.setText(listCustDetail.get(i).get("kabupaten").toString());
+                etKodeTelp.setText(listCustDetail.get(i).get("kodeTelp").toString());
                 listAllItem.clear();
                 listSatuan.clear();
             }
@@ -479,11 +488,19 @@ public class FormPengajuan extends AppCompatActivity {
 
         InitSpin();
         spinJenisPekerjaan();
-        spinBank();
+
 
         calendar = Calendar.getInstance();
         AndLog.ShowLog("tgll", tanggal_sekarang);
 
+        txHandPhone.setText("08");
+        txHandPhone.setMaxEms(15);
+        txHandPhoneAlter.setText("08");
+        txHandPhoneAlter.setMaxEms(15);
+        txNoTelpklgSerumah.setText("08");
+        txNoTelpklgSerumah.setMaxEms(15);
+        txNoTelpklgTdkSerumah.setText("08");
+        txNoTelpklgTdkSerumah.setMaxEms(15);
     }
 
     public String getCurrentDate() {
@@ -500,9 +517,10 @@ public class FormPengajuan extends AppCompatActivity {
     String tgl, usia;
 
     @OnClick({R.id.btBack, R.id.btKtp, R.id.txKtp, R.id.btSlip, R.id.btBukuRek, R.id.btSubmit,
-            R.id.txTglLahir, R.id.txKelurahan, R.id.btKtpTake, R.id.btBukuRekTake, R.id.btSlipTake})
+            R.id.txTglLahir, R.id.txKelurahan, R.id.btKtpTake, R.id.btBukuRekTake, R.id.btSlipTake, R.id.btSelfiTake})
     public void onClick(View view) {
         switch (view.getId()) {
+
             case R.id.txTglLahir:
 //                new DatePickerDialog(FormPengajuan.this, new DatePickerDialog.OnDateSetListener() {
 //                    @Override
@@ -662,10 +680,10 @@ public class FormPengajuan extends AppCompatActivity {
 
                 String sts_rmh = txStatusRumah.getText().toString();
                 switch (sts_rmh) {
-                    case "Milik Pribadi":
+                    case "Milik Sendiri":
                         status_rumah = "1";
                         break;
-                    case "Milik Keluarga":
+                    case "Milik Orang tua":
                         status_rumah = "5";
                         break;
                     case "Sewa Kos":
@@ -694,6 +712,8 @@ public class FormPengajuan extends AppCompatActivity {
 //                params.put("", txKuponDiskon.getText().toString());
                     params.put("nama_lengkap", txNamaLengkap.getText().toString());
                     params.put("jk", jk);
+                    params.put("rt", txRT.getText().toString());
+                    params.put("rw", txRW.getText().toString());
                     params.put("email", txEmail.getText().toString());
                     params.put("email_alternatif", txEmail.getText().toString());
                     params.put("password", txPassword.getText().toString());
@@ -710,15 +730,17 @@ public class FormPengajuan extends AppCompatActivity {
                     params.put("status_rumah_label", sts_rmh);
                     params.put("lama_tinggal_tahun", txLamaTahun.getText().toString());
                     params.put("lama_tinggal_bulan", txLamaBulan.getText().toString());
+                    params.put("kode_area", txKodeArea.getText().toString());
                     params.put("telepon", txTelpRumah.getText().toString());
                     params.put("handphone", txHandPhone.getText().toString());
-                    params.put("handphone_alternatif", txHandPhone.getText().toString());
+                    params.put("handphone_alternatif", txHandPhoneAlter.getText().toString());
                     params.put("jenis_pekerjaan", spinJenisPekerjaan.getText().toString());
                     params.put("perusahaan", txNamaPerusahaan.getText().toString());
                     params.put("posisi", txPosisi.getText().toString());
                     params.put("lama_bekerja", txLamaBekerja.getText().toString());
                     params.put("nama_hrd", txNamaHrd.getText().toString());
                     params.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
+                    params.put("kota_perusahaan", txKotaP.getText().toString());
                     params.put("status_kontrak", txStatusKerja.getText().toString());
                     params.put("batas_kontrak", txBatasKontrak.getText().toString());
                     params.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
@@ -752,7 +774,7 @@ public class FormPengajuan extends AppCompatActivity {
                         UpdateSetujui();
                     } else {
                         progressDialog.show();
-//                        SaveLog();
+                        SaveLog();
                         AsyncTaskRunner task = new AsyncTaskRunner();
                         task.execute();
                     }
@@ -772,6 +794,12 @@ public class FormPengajuan extends AppCompatActivity {
             case R.id.btSlipTake:
                 if (checkPermission()) {
                     takeImageSlip(view);
+                }
+
+                break;
+            case R.id.btSelfiTake:
+                if (checkPermission()) {
+                    takeImageSelfi(view);
                 }
                 break;
         }
@@ -797,12 +825,14 @@ public class FormPengajuan extends AppCompatActivity {
                         String kodepos = jos.getString("kodepos_kode");
                         String kecamatan = jos.getString("kodepos_kecamatan");
                         String kab = jos.getString("kodepos_kabupaten");
+                        String kode = jos.getString("kodepos_kode_tlp");
                         HashMap<String, String> cust = new HashMap<>();
 
                         cust.put("kelurahan", kelurahan);
                         cust.put("kodepos", kodepos);
                         cust.put("kecamatan", kecamatan);
                         cust.put("kabupaten", kab);
+                        cust.put("kodeTelp", kode);
                         listCust.add(kelurahan + " - " + kecamatan);
                         listCustDetail.add(cust);
 
@@ -873,6 +903,8 @@ public class FormPengajuan extends AppCompatActivity {
                 String no_ktp = jo.getString("no_ktp");
                 String tgl_lahir = jo.getString("tgl_lahir");
                 String tgl_lahir_label = jo.getString("tgl_lahir_label");
+                String rt = jo.getString("rt");
+                String rw = jo.getString("rw");
                 String alamat = jo.getString("alamat");
                 String kota = jo.getString("kota");
                 String kelurahan = jo.getString("kelurahan");
@@ -882,11 +914,13 @@ public class FormPengajuan extends AppCompatActivity {
                 String status_rumah_label = jo.getString("status_rumah_label");
                 String lama_tinggal_tahun = jo.getString("lama_tinggal_tahun");
                 String lama_tinggal_bulan = jo.getString("lama_tinggal_bulan");
+                String kodearea = jo.getString("kode_area");
                 String telepon = jo.getString("telepon");
                 String handphone = jo.getString("handphone");
                 String handphone_alternatif = jo.getString("handphone_alternatif");
                 String jenis_pekerjaan = jo.getString("jenis_pekerjaan");
                 String perusahaan = jo.getString("perusahaan");
+                String kota_perusahaan = jo.getString("kota_perusahaan");
                 String posisi = jo.getString("posisi");
                 String lama_bekerja = jo.getString("lama_bekerja");
                 String nama_hrd = jo.getString("nama_hrd");
@@ -919,6 +953,8 @@ public class FormPengajuan extends AppCompatActivity {
                 txTglLahir.setText(tgl_lahir_label);
                 txAlamatPelanggan.setText(alamat);
                 txKota.setText(kota);
+                txRT.setText(rt);
+                txRW.setText(rw);
                 txKelurahan.setText(kelurahan);
                 txKecamatan.setText(kecamatan);
                 txKodePos.setText(kodepos);
@@ -926,6 +962,7 @@ public class FormPengajuan extends AppCompatActivity {
                 txStatusRumah.setText(status_rumah_label);
                 txLamaTahun.setText(lama_tinggal_tahun);
                 txLamaBulan.setText(lama_tinggal_bulan);
+                txKodeArea.setText(kodearea);
                 txTelpRumah.setText(telepon);
                 txHandPhone.setText(handphone);
                 txNamaPerusahaan.setText(perusahaan);
@@ -933,6 +970,7 @@ public class FormPengajuan extends AppCompatActivity {
                 txLamaBekerja.setText(lama_bekerja);
                 txNamaHrd.setText(nama_hrd);
                 txAlamatPerusahaan.setText(alamat_perusahaan);
+                txKotaP.setText(kota_perusahaan);
                 txStatusKerja.setText(status_kontrak);
                 txBatasKontrak.setText(batas_kontrak);
                 txTelpPerusahaan.setText(telepon_perusahaan);
@@ -972,6 +1010,8 @@ public class FormPengajuan extends AppCompatActivity {
             viewList.add(txNoKtp);
             viewList.add(txTglLahir);
             viewList.add(txAlamatPelanggan);
+            viewList.add(txRT);
+            viewList.add(txRW);
             viewList.add(txKelurahan);
             viewList.add(txKota);
             viewList.add(txKecamatan);
@@ -979,6 +1019,7 @@ public class FormPengajuan extends AppCompatActivity {
             viewList.add(txStatusRumah);
             viewList.add(txLamaTahun);
             viewList.add(txLamaBulan);
+            viewList.add(txKodeArea);
             viewList.add(txTelpRumah);
             viewList.add(txHandPhone);
             viewList.add(spinJenisPekerjaan);
@@ -987,6 +1028,7 @@ public class FormPengajuan extends AppCompatActivity {
             viewList.add(txLamaBekerja);
             viewList.add(txNamaHrd);
             viewList.add(txAlamatPerusahaan);
+            viewList.add(txKotaP);
             viewList.add(txStatusKerja);
             viewList.add(txBatasKontrak);
             viewList.add(txTelpPerusahaan);
@@ -1025,6 +1067,8 @@ public class FormPengajuan extends AppCompatActivity {
             ilList.add(ilNoKtp);
             ilList.add(ilTglLahir);
             ilList.add(ilAlamatPelanggan);
+            ilList.add(ilRT);
+            ilList.add(ilRW);
             ilList.add(ilKelurahan);
             ilList.add(ilKota);
             ilList.add(ilKecamatan);
@@ -1032,6 +1076,7 @@ public class FormPengajuan extends AppCompatActivity {
             ilList.add(ilStatusRumah);
             ilList.add(ilLamaTahun);
             ilList.add(ilLamaBulan);
+            ilList.add(ilKodeArea);
             ilList.add(ilTelpRumah);
             ilList.add(ilHandPhone);
             ilList.add(ilJenisPekerjaan);
@@ -1040,6 +1085,7 @@ public class FormPengajuan extends AppCompatActivity {
             ilList.add(ilLamaBekerja);
             ilList.add(ilNamaHrd);
             ilList.add(ilAlamatPerusahaan);
+            ilList.add(ilKotaP);
             ilList.add(ilStatusKerja);
             ilList.add(ilBatassKontrak);
             ilList.add(ilTelpPerusahaan);
@@ -1198,84 +1244,88 @@ public class FormPengajuan extends AppCompatActivity {
     }
 
 
-//    private void SaveLog() {
-//
-//        final HashMap<String, String> tmp = new HashMap<>();
-//        String gj = txGajiPerbulan.getText().toString();
-//        gj = gj.replace(".", "");
-//        gj = gj.replace(",", "");
-//        tmp.put("amount", jumlah);
-//        tmp.put("duration", periode);
-//        tmp.put("jatuh_tempo", jatuh_tempo);
-//        tmp.put("total", total_byr);
-//        tmp.put("tujuan_pinjam", spTujuan.getSelectedItem().toString());
-//        tmp.put("nama_lengkap", txNamaLengkap.getText().toString());
-//        tmp.put("jk", jk);
-//        tmp.put("email", txEmail.getText().toString());
-//        tmp.put("email_alternatif", txEmail.getText().toString());
-//        tmp.put("password", txPassword.getText().toString());
-//        tmp.put("no_ktp", txNoKtp.getText().toString());
-//        tmp.put("tgl_lahir", DateTool.changeFormat(txTglLahir.getText().toString(), "dd MMM yyyy", "MM/dd/yyyy"));
-//        tmp.put("kota", txKota.getText().toString());
-//        tmp.put("alamat", txAlamatPelanggan.getText().toString());
-//        tmp.put("kelurahan", txKelurahan.getText().toString());
-//        tmp.put("kecamatan", txKecamatan.getText().toString());
-//        tmp.put("kodepos", txKodePos.getText().toString());
-//        tmp.put("status_rumah", status_rumah);
-//        tmp.put("lama_tinggal_tahun", txLamaTahun.getText().toString());
-//        tmp.put("lama_tinggal_bulan", txLamaBulan.getText().toString());
-//        tmp.put("telepon", txTelpRumah.getText().toString());
-//        tmp.put("handphone", txHandPhone.getText().toString());
-//        tmp.put("jenis_pekerjaan", spinJenisPekerjaan.getText().toString());
-//        tmp.put("nama_perusahaan", txNamaPerusahaan.getText().toString());
-//        tmp.put("posisi", txPosisi.getText().toString());
-//        tmp.put("lama_bekerja", txLamaBekerja.getText().toString());
-//        tmp.put("nama_hrd", txNamaHrd.getText().toString());
-//        tmp.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
-//        tmp.put("status_kontrak", txStatusKerja.getText().toString());
-//        tmp.put("batas_kontrak", txBatasKontrak.getText().toString());
-//        tmp.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
-//        tmp.put("besar_gaji", gj);
-//        tmp.put("tanggal_gajian", txTglGajian.getText().toString());
-//        tmp.put("nama_keluarga_serumah", txNamaKlgSerumah.getText().toString());
-//        tmp.put("telepon_keluarga_serumah", txNoTelpklgSerumah.getText().toString());
-//        tmp.put("nama_keluarga_tidak_serumah", txNamaKlgRdkSerumah.getText().toString());
-//        tmp.put("telepon_keluarga_tidak_serumah", txNoTelpklgTdkSerumah.getText().toString());
-//        tmp.put("hubungan_keluarga_tidak_serumah", txHubunganKeluarga.getText().toString());
-//        tmp.put("alamat_keluarga_tidak_serumah", txAlamatKlgTdkSerumah.getText().toString());
-//        tmp.put("nama_pemilik_rekening", txNamaPemilikRek.getText().toString());
-//        tmp.put("nama_bank", spBank.getSelectedItem().toString());
-//        tmp.put("lokasi_cabang_bank", txCabang.getText().toString());
-//        tmp.put("nomor_rekening", txNoRekening.getText().toString());
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConf.PINJAMWINWINLOG, new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//
-//            }
-//
-//        }) {
-//
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//
-//
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("log", Hash2Json.convertSingle(tmp));
-//
-//                return params;
-//            }
-//        };
-//
-//        stringRequest.setTag(AppConf.httpTag);
-//        VolleyHttp.getInstance(FormPengajuan.this).addToRequestQueue(stringRequest);
-//
-//    }
+    private void SaveLog() {
+
+        final HashMap<String, String> tmp = new HashMap<>();
+        String gj = txGajiPerbulan.getText().toString();
+        gj = gj.replace(".", "");
+        gj = gj.replace(",", "");
+        tmp.put("amount", jumlah);
+        tmp.put("duration", periode);
+        tmp.put("jatuh_tempo", jatuh_tempo);
+        tmp.put("total", total_byr);
+        tmp.put("tujuan_pinjam", spTujuan.getSelectedItem().toString());
+        tmp.put("nama_lengkap", txNamaLengkap.getText().toString());
+        tmp.put("jk", jk);
+        tmp.put("email", txEmail.getText().toString());
+        tmp.put("email_alternatif", txEmail.getText().toString());
+        tmp.put("password", txPassword.getText().toString());
+        tmp.put("no_ktp", txNoKtp.getText().toString());
+        tmp.put("tgl_lahir", DateTool.changeFormat(txTglLahir.getText().toString(), "dd MMM yyyy", "MM/dd/yyyy"));
+        tmp.put("kota", txKota.getText().toString());
+        tmp.put("alamat", txAlamatPelanggan.getText().toString());
+        tmp.put("rt", txRT.getText().toString());
+        tmp.put("rw", txRW.getText().toString());
+        tmp.put("kelurahan", txKelurahan.getText().toString());
+        tmp.put("kecamatan", txKecamatan.getText().toString());
+        tmp.put("kodepos", txKodePos.getText().toString());
+        tmp.put("status_rumah", status_rumah);
+        tmp.put("lama_tinggal_tahun", txLamaTahun.getText().toString());
+        tmp.put("lama_tinggal_bulan", txLamaBulan.getText().toString());
+        tmp.put("kode_area", txKodeArea.getText().toString());
+        tmp.put("telepon", txTelpRumah.getText().toString());
+        tmp.put("handphone", txHandPhone.getText().toString());
+        tmp.put("jenis_pekerjaan", spinJenisPekerjaan.getText().toString());
+        tmp.put("nama_perusahaan", txNamaPerusahaan.getText().toString());
+        tmp.put("posisi", txPosisi.getText().toString());
+        tmp.put("lama_bekerja", txLamaBekerja.getText().toString());
+        tmp.put("nama_hrd", txNamaHrd.getText().toString());
+        tmp.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
+        tmp.put("kota_perusahaan", txKotaP.getText().toString());
+        tmp.put("status_kontrak", txStatusKerja.getText().toString());
+        tmp.put("batas_kontrak", txBatasKontrak.getText().toString());
+        tmp.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
+        tmp.put("besar_gaji", gj);
+        tmp.put("tanggal_gajian", txTglGajian.getText().toString());
+        tmp.put("nama_keluarga_serumah", txNamaKlgSerumah.getText().toString());
+        tmp.put("telepon_keluarga_serumah", txNoTelpklgSerumah.getText().toString());
+        tmp.put("nama_keluarga_tidak_serumah", txNamaKlgRdkSerumah.getText().toString());
+        tmp.put("telepon_keluarga_tidak_serumah", txNoTelpklgTdkSerumah.getText().toString());
+        tmp.put("hubungan_keluarga_tidak_serumah", txHubunganKeluarga.getText().toString());
+        tmp.put("alamat_keluarga_tidak_serumah", txAlamatKlgTdkSerumah.getText().toString());
+        tmp.put("nama_pemilik_rekening", txNamaPemilikRek.getText().toString());
+        tmp.put("nama_bank", spBank.getSelectedItem().toString());
+        tmp.put("lokasi_cabang_bank", txCabang.getText().toString());
+        tmp.put("nomor_rekening", txNoRekening.getText().toString());
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConf.PINJAMWINWINLOG, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("log", Hash2Json.convertSingle(tmp));
+
+                return params;
+            }
+        };
+
+        stringRequest.setTag(AppConf.httpTag);
+        VolleyHttp.getInstance(FormPengajuan.this).addToRequestQueue(stringRequest);
+
+    }
 
     private void spinJenisPekerjaan() {
         AndLog.ShowLog("upek", URL_HQ + "ref_pekerjaan.php");
@@ -1298,12 +1348,14 @@ public class FormPengajuan extends AppCompatActivity {
                         R.layout.custom_spinner,
                         tujuan));
 
+                spinBank();
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
+                loading.dismiss();
                 if (error instanceof TimeoutError) {
                     Toast.makeText(FormPengajuan.this, "timeout", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof NoConnectionError) {
@@ -1348,12 +1400,13 @@ public class FormPengajuan extends AppCompatActivity {
                         bank));
 
                 progressDialog.dismiss();
-
+                loading.dismiss();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 progressDialog.dismiss();
+                loading.dismiss();
                 if (error instanceof TimeoutError) {
                     Toast.makeText(FormPengajuan.this, "timeout", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof NoConnectionError) {
@@ -1413,17 +1466,18 @@ public class FormPengajuan extends AppCompatActivity {
                 multipart.addFormField("password", txPassword.getText().toString());
                 multipart.addFormField("no_ktp", txNoKtp.getText().toString());
                 multipart.addFormField("tgl_lahir", DateTool.changeFormat(txTglLahir.getText().toString(), "dd MMM yyyy", "MM/dd/yyyy"));
-                multipart.addFormField("kota", txKota.getText().toString());
                 multipart.addFormField("alamat", txAlamatPelanggan.getText().toString());
                 multipart.addFormField("rt", txAlamatPelanggan.getText().toString());
                 multipart.addFormField("rw", txAlamatPelanggan.getText().toString());
                 multipart.addFormField("kelurahan", txKelurahan.getText().toString());
+                multipart.addFormField("kota", txKota.getText().toString());
                 multipart.addFormField("kecamatan", txKecamatan.getText().toString());
                 multipart.addFormField("kodepos", txKodePos.getText().toString());
                 multipart.addFormField("status_rumah", status_rumah);
                 multipart.addFormField("lama_tinggal_tahun", txLamaTahun.getText().toString());
                 multipart.addFormField("lama_tinggal_bulan", txLamaBulan.getText().toString());
-                multipart.addFormField("telepon", txTelpRumah.getText().toString());
+                multipart.addFormField("kode_area", txKodeArea.getText().toString());
+                multipart.addFormField("telepon", etKodeTelp.getText().toString() + txTelpRumah.getText().toString());
                 multipart.addFormField("handphone", txHandPhone.getText().toString());
                 multipart.addFormField("jenis_pekerjaan", spinJenisPekerjaan.getText().toString());
                 multipart.addFormField("nama_perusahaan", txNamaPerusahaan.getText().toString());
@@ -1431,6 +1485,7 @@ public class FormPengajuan extends AppCompatActivity {
                 multipart.addFormField("lama_bekerja", txLamaBekerja.getText().toString());
                 multipart.addFormField("nama_hrd", txNamaHrd.getText().toString());
                 multipart.addFormField("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
+                multipart.addFormField("kota_perusahaan", txKotaP.getText().toString());
                 multipart.addFormField("status_kontrak", txStatusKerja.getText().toString());
                 multipart.addFormField("batas_kontrak", txBatasKontrak.getText().toString());
                 multipart.addFormField("telepon_perusahaan", txTelpPerusahaan.getText().toString());
@@ -1465,6 +1520,12 @@ public class FormPengajuan extends AppCompatActivity {
             if (image3 != null) {
                 File imageFile = new File(image3);
                 multipart.addFilePart("file_bukurek", imageFile);
+
+            }
+
+            if (image4 != null) {
+                File imageFile = new File(image4);
+                multipart.addFilePart("file_selfi", imageFile);
 
             }
 
@@ -1965,6 +2026,26 @@ public class FormPengajuan extends AppCompatActivity {
                 }
             }
         }
+
+        if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
+            if (btSelfiTake.isClickable()) {
+                try {
+                    if (mHighQualityImageUri == null) {
+                        GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
+                    } else {
+                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
+                        MediaProcess.bitmapToFile(bmp, outFileSelfi.getAbsolutePath(), 30);
+                        scale = MediaProcess.scaledBitmap(outFileSelfi.getAbsolutePath());
+                        MediaProcess.bitmapToFile(scale, outFileSelfi.getAbsolutePath(), 30);
+                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
+                        image4 = outFileSelfi.getAbsolutePath();
+                        txSelfi.setVisibility(View.GONE);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void takeImageKTP(View view) {
@@ -1998,6 +2079,16 @@ public class FormPengajuan extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
         startActivityForResult(intent, TAKE_IMAGE3);
+    }
+
+    public void takeImageSelfi(View view) {
+
+        FileModel fileModel = generateTimeStampPhotoFileUri();
+        mHighQualityImageUri = fileModel.getUriPath();
+        outFileSelfi = fileModel.getFilePath();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
+        startActivityForResult(intent, TAKE_IMAGE4);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)

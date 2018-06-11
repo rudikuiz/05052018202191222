@@ -504,12 +504,23 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp">
 
-                    <EditText
-                        android:id="@+id/txTelpRumah"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/telepon_rumah"
-                        android:inputType="phone" />
+                        android:orientation="horizontal">
+                        <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/etKodeTelp"
+                            android:enabled="false"/>
+                        <EditText
+                            android:id="@+id/txTelpRumah"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/telepon_rumah"
+                            android:inputType="phone" />
+                    </LinearLayout>
+
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -525,6 +536,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/handphone"
+                        android:inputType="numberDecimal|numberSigned" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/ilHandPhoneAlter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <EditText
+                        android:id="@+id/txHandPhoneAlter"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/no_hp_alternatif"
                         android:inputType="numberDecimal|numberSigned" />
 
                 </android.support.design.widget.TextInputLayout>

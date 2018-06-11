@@ -9,7 +9,7 @@ public class AppConf {
     public static final String URL_HQ = "https://hq.ppgwinwin.com/winwin/api/";
     public static final String URL_HQ2 = "https://hq.ppgwinwin.com:445/userapps/";
 
-//    public static final String PINJAMWINWINLOG = "http://118.98.64.43/winwinlog/index.php";
+    public static final String PINJAMWINWINLOG = "http://118.98.64.43/winwinlog/index.php";
     public static final String PINJAMWINWIN = "https://pinjamwinwin.com/api/";
 //    public static final String PINJAMWINWIN = "http://winwinujicoba.tamboraagungmakmur.com/api/";
     //public static final String BASE_URL = "http://messenger.flyvoi.com";

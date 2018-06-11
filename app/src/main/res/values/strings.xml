@@ -320,5 +320,7 @@
     <string name="kodearea">Kode Area</string>
     <string name="no_hp_alternatif">No HP Alternatif</string>
     <string name="upload_selfi">Upload Foto Selfi Anda dengan memegang KTP</string>
-    
+    <string name="metode">Metode Pembayaran</string>
+    <string name="notedtrans">Berikut nomor Virtual Account PT. Progo Puncak Group. 11111 + Nomor HP anda yang terdaftar di aplikasi.</string>
+    <string name="bcava">BCA Virtual Account</string>
 </resources>

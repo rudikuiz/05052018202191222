@@ -18,9 +18,9 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+
     <application
         android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
@@ -29,7 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="metis.winwin.Splash"
+            android:name=".Splash"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -39,89 +39,97 @@
             </intent-filter>
         </activity>
 
-        <service android:name="metis.winwin.Firebase.MessageIdService">
+        <service android:name=".Firebase.MessageIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service android:name="metis.winwin.Firebase.MessagingService">
+        <service android:name=".Firebase.MessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <activity
-            android:name="metis.winwin.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.FormPengajuan"
+            android:name=".FormPengajuan"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Notifikasi"
+            android:name=".Notifikasi"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.HistoryPengajuan"
+            android:name=".HistoryPengajuan"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.HowItWorks"
+            android:name=".HowItWorks"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Login"
+            android:name=".Login"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.VoiceCall"
+            android:name=".VoiceCall"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.VoiceCallBridge"
+            android:name=".VoiceCallBridge"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.IncommingCall"
+            android:name=".IncommingCall"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.WebRTC.VoiceCalling"
+            android:name=".WebRTC.VoiceCalling"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.WebRTC.VideoCalling"
+            android:name=".WebRTC.VideoCalling"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Chat"
+            android:name=".Chat"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Bayar"
+            android:name=".Bayar"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Main2Activity"
+            android:name=".BayarRequest"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.Main3Activity"
+            android:name=".BCATransfer"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.RequestBayar"
+            android:name=".RequestBayar"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name="metis.winwin.StatusPinjaman"
+            android:name=".StatusPinjaman"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
-            android:name="metis.winwin.JanjiBayar"
+            android:name=".JanjiBayar"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name="metis.winwin.CariKelurahan"
-            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert"/>
+        <activity
+            android:name=".CariKelurahan"
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
+        <activity
+            android:name=".MetodePembayaran"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".VirtualAccount"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".WebViewVirtualAccount"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

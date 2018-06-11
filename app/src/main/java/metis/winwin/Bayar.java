@@ -95,7 +95,7 @@ public class Bayar extends AppCompatActivity {
         btAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Bayar.this, Main2Activity.class);
+                Intent intent = new Intent(Bayar.this, BayarRequest.class);
                 startActivity(intent);
 
             }

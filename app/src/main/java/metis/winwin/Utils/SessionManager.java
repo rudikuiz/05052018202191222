@@ -46,6 +46,8 @@ public class SessionManager {
 
     public static final String KEY_TOTAL_SETUJUI = "total_setujui";
 
+    public static final String VTOKEN = "token";
+
     public SessionManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -95,6 +97,9 @@ public class SessionManager {
         return pref.getString(SESSION, null);
     }
 
+    public String getToken() {
+        return pref.getString(VTOKEN, null);
+    }
 
     public boolean isLoggedIn() {
         return pref.getBoolean(IS_LOGIN, false);
@@ -199,6 +204,12 @@ public class SessionManager {
         editor.putString(KEY_TOTAL_SETUJUI, value);
         editor.commit();
     }
+
+    public void setToken(String value) {
+        editor.putString(VTOKEN, value);
+        editor.commit();
+    }
+
 
 
 }

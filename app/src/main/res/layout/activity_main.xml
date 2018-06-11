@@ -57,7 +57,7 @@
                         android:layout_marginLeft="20dp"
                         android:text="@string/home"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
 
                 </LinearLayout>
 
@@ -107,7 +107,7 @@
                         android:layout_marginLeft="20dp"
                         android:text="@string/statuspinjaman"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
 
                 </LinearLayout>
 
@@ -132,7 +132,7 @@
                         android:layout_marginLeft="17dp"
                         android:text="@string/bayar"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
 
                 </LinearLayout>
 
@@ -157,7 +157,7 @@
                         android:layout_marginLeft="17dp"
                         android:text="@string/request"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
 
                 </LinearLayout>
 
@@ -182,7 +182,7 @@
                         android:layout_marginLeft="17dp"
                         android:text="@string/janjibayar"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
 
                 </LinearLayout>
 
@@ -206,7 +206,7 @@
                         android:layout_marginLeft="20dp"
                         android:text="@string/history_pengajuan"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                         />
 
                 </LinearLayout>
 
@@ -222,7 +222,8 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_contact" />
+                        android:src="@drawable/call"
+                        android:layout_marginRight="7dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -230,7 +231,7 @@
                         android:layout_marginLeft="20dp"
                         android:text="@string/voice_call"
                         android:textColor="@android:color/black"
-                        android:textStyle="bold" />
+                        />
 
                 </LinearLayout>
 
@@ -274,7 +275,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="30dp"
                         android:text="@string/how_it_work"
                         android:textColor="@android:color/black" />
 
