@@ -48,8 +48,10 @@ public class AppConf {
     public static final String SAVELOG = URL_HQ + "save_log_contact.php";
     public static final String SAVEKONTAK = URL_HQ + "save_kontak.php";
     public static final String JUMLAH_PINJAMAN = URL_HQ + "jumlah_lunas.php?pengajuan_id_client=";
-
-
+    public static final String FORGOTPASSWORD = PINJAMWINWIN + "fpw";
+    //    public static final String UPLOADSELFI = "http://winwinujicobaadmin.tamboraagungmakmur.com/debt_collector/insertselfi.php";
+    public static final String UPLOADSELFI = URL_HQ + "insertselfi.php";
+    public static final String RATING = URL_HQ + "rating.php?cli_id=";
     public static final String PING_PREF = "ping_notification";
 
     public static final int PING_INTERVAL = 120000;

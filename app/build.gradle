@@ -13,8 +13,8 @@ android {
         applicationId "metis.winwin"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 33
-        versionName "1.32"
+        versionCode 37
+        versionName "1.36"
 
         multiDexEnabled true
 
@@ -41,14 +41,15 @@ dependencies {
     compile 'com.code-troopers.betterpickers:library:2.5.3'
     compile 'fr.avianey.com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.google.firebase:firebase-messaging:9.2.0'
+    compile 'com.google.firebase:firebase-messaging:11.8.0'
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.weiwangcn.betterspinner:library:1.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-location:9.2.0'
-    compile 'com.google.android.gms:play-services:9.2.0'
+    compile 'com.google.android.gms:play-services-location:11.8.0'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
     compile 'org.apache.httpcomponents:httpmime:4.2.3'
+
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

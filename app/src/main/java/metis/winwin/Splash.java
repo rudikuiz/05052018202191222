@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import metis.winwin.Utils.SessionManager;
+
 public class Splash extends AppCompatActivity {
 
     private Handler handler;
@@ -26,7 +28,14 @@ public class Splash extends AppCompatActivity {
         @Override
         public void run() {
 
-            Intent main = new Intent(Splash.this, MainActivity.class);
+            Intent main = null;
+            SessionManager sessionManager = new SessionManager(Splash.this);
+            if(!sessionManager.checkFirstLook()){
+                main = new Intent(Splash.this, TermCondition.class);
+
+            }else {
+                main = new Intent(Splash.this, MainActivity.class);
+            }
             startActivity(main);
             finish();
 

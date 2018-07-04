@@ -3,14 +3,12 @@ package metis.winwin;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.http.SslError;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
-import android.util.Log;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -21,6 +19,7 @@ import android.widget.EditText;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import metis.winwin.Utils.AndLog;
 
 public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -31,15 +30,22 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
     WebSettings webSettings;
     @Bind(R.id.editext)
     EditText editText;
+    String nama, nohp, nominal, id_peng;
+
     private ProgressDialog progressDialog;
     private static final String TAG = "WebViewLog";
-    private static String url = "https://hq.ppgwinwin.com/winwin/api/payment/payment_sandbox.php?nominal=100000&nama=amir%20test%20winwin&id=14141";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view_transfer);
         ButterKnife.bind(this);
-
+        Intent intent = getIntent();
+        id_peng = intent.getStringExtra("id_peng");
+        nominal = intent.getStringExtra("nominal");
+        nohp = intent.getStringExtra("nohp");
+        nama = intent.getStringExtra("nama");
+        String url = "https://hq.ppgwinwin.com/winwin/api/payment/paymentv2.php?nominal=" + nominal + "&nama=" + nama + "&id=" + id_peng + "&hp=" + nohp + "";
         swipe.setOnRefreshListener(this);
         webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -65,6 +71,9 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 swipe.setRefreshing(false);
+                if (url.contains("finish.php")){
+                    finish();
+                }
                 return true;
             }
 
@@ -129,11 +138,11 @@ public class WebViewVirtualAccount extends AppCompatActivity implements SwipeRef
 
     @Override
     public void onBackPressed() {
-        if (mWebView.canGoBack()) {
-            mWebView.goBack();
-        } else {
+//        if (mWebView.canGoBack()) {
+//            mWebView.goBack();
+//        } else {
             super.onBackPressed();
-        }
+//        }
     }
 
     @Override

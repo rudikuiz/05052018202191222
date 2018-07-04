@@ -303,11 +303,27 @@
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />
 
+            <Button
+                android:id="@+id/linF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="110dp"
+                android:layout_marginRight="110dp"
+                android:background="@drawable/rounded_view_abu"
+                android:minHeight="10dp"
+                android:padding="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/btLogin"
+                android:text="@string/forgot_password"
+                android:textAllCaps="false"
+                android:textColor="@android:color/holo_red_dark"
+                android:layout_marginBottom="10dp"/>
+
             <TextView
                 android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btLogin"
+                android:layout_below="@+id/linF"
                 android:layout_marginBottom="10dp"
                 android:textAlignment="center" />
         </RelativeLayout>

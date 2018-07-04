@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -28,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -63,6 +65,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -92,6 +95,8 @@ import metis.winwin.Utils.MediaProcess;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
 
+import static metis.winwin.Utils.AppConf.RATING;
+import static metis.winwin.Utils.AppConf.UPLOADSELFI;
 import static metis.winwin.Utils.AppConf.URL_HQ;
 
 public class FormPengajuan extends AppCompatActivity {
@@ -153,7 +158,7 @@ public class FormPengajuan extends AppCompatActivity {
     @Bind(R.id.txAlamatPerusahaan)
     EditText txAlamatPerusahaan;
     @Bind(R.id.txStatusKerja)
-    BetterSpinner txStatusKerja;
+    Spinner txStatusKerja;
     @Bind(R.id.txTelpPerusahaan)
     EditText txTelpPerusahaan;
     @Bind(R.id.txGajiPerbulan)
@@ -334,7 +339,7 @@ public class FormPengajuan extends AppCompatActivity {
     @Bind(R.id.ilKodeArea)
     TextInputLayout ilKodeArea;
     @Bind(R.id.txKotaP)
-    EditText txKotaP;
+    AutoCompleteTextView txKotaP;
     @Bind(R.id.ilKotaP)
     TextInputLayout ilKotaP;
     @Bind(R.id.btSelfiTake)
@@ -351,6 +356,8 @@ public class FormPengajuan extends AppCompatActivity {
     TextInputLayout ilHandPhoneAlter;
     @Bind(R.id.etKodeTelp)
     EditText etKodeTelp;
+    @Bind(R.id.pbKota)
+    ProgressBar pbKota;
 
     private ProgressDialog progressDialog;
     private ArrayList<View> viewList;
@@ -395,6 +402,7 @@ public class FormPengajuan extends AppCompatActivity {
     private Uri mHighQualityImageUri;
     private final int PROS_ID = 8844;
     OwnProgressDialog loading;
+    String pilihan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -410,8 +418,10 @@ public class FormPengajuan extends AppCompatActivity {
         loading.show();
         requestQueue = Volley.newRequestQueue(FormPengajuan.this);
         sessionManager = new SessionManager(FormPengajuan.this);
+
         viewList = new ArrayList<>();
         ilList = new ArrayList<>();
+
         progressDialog = new ProgressDialog(FormPengajuan.this);
         progressDialog.setMessage("Loading...");
         status_rumah = "5";
@@ -471,6 +481,29 @@ public class FormPengajuan extends AppCompatActivity {
             }
         });
 
+        txKotaP.setThreshold(2);
+        txKotaP.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 1 && !custSearch) {
+
+                    pbKota.setVisibility(View.VISIBLE);
+                    custSearch = true;
+                    GetKota();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         txKelurahan.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -480,7 +513,9 @@ public class FormPengajuan extends AppCompatActivity {
                 txKecamatan.setText(listCustDetail.get(i).get("kecamatan").toString());
                 txKelurahan.setText(kel);
                 txKota.setText(listCustDetail.get(i).get("kabupaten").toString());
+                txKotaP.setText(listCustDetail.get(i).get("kabupaten").toString());
                 etKodeTelp.setText(listCustDetail.get(i).get("kodeTelp").toString());
+                txKodeArea.setText(listCustDetail.get(i).get("kodeTelp").toString());
                 listAllItem.clear();
                 listSatuan.clear();
             }
@@ -501,6 +536,29 @@ public class FormPengajuan extends AppCompatActivity {
         txNoTelpklgSerumah.setMaxEms(15);
         txNoTelpklgTdkSerumah.setText("08");
         txNoTelpklgTdkSerumah.setMaxEms(15);
+
+        Rating();
+
+        txStatusKerja.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String values = txStatusKerja.getSelectedItem().toString();
+
+                if (values.equals("Karyawan Tetap")) {
+                    txBatasKontrak.setText("-");
+                    txBatasKontrak.setEnabled(false);
+                } else if (values.equals("Karyawan Kontrak")) {
+                    txBatasKontrak.setText(null);
+                    txBatasKontrak.requestFocus();
+                    txBatasKontrak.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     public String getCurrentDate() {
@@ -554,6 +612,9 @@ public class FormPengajuan extends AppCompatActivity {
                                 if (umur < 21) {
                                     Tooat("Maaf, Usia tidak boleh dibawah 21 Tahun");
                                     txTglLahir.getText().clear();
+                                } else if (umur > 50) {
+                                    Tooat("Maaf, Usia tidak boleh diatas 50 Tahun");
+                                    txTglLahir.getText().clear();
                                 } else {
                                     txTglLahir.setText(tgl);
                                 }
@@ -596,7 +657,17 @@ public class FormPengajuan extends AppCompatActivity {
                             }
                             err++;
                             ilList.get(i).setError("Belum diisi");
-                        } else {
+                        }
+
+//                        else if (txStatusKerja.getText().equals("Karyawan Tetap")) {
+//                            txBatasKontrak.setText("-");
+//                            txBatasKontrak.setEnabled(false);
+//                        } else if (txStatusKerja.getText().equals("Karyawan Kontrak")) {
+//                            txBatasKontrak.requestFocus();
+//                            txBatasKontrak.setEnabled(true);
+//                        }
+
+                        else {
                             ilList.get(i).setError(null);
                             ilList.get(i).setErrorEnabled(false);
 
@@ -661,6 +732,10 @@ public class FormPengajuan extends AppCompatActivity {
                             GlobalToast.ShowToast(FormPengajuan.this, "Silahkan pilih foto buku rekening");
                             err++;
                         }
+//                        else if (image4 == null) {
+//                            GlobalToast.ShowToast(FormPengajuan.this, "Silahkan mengambil gambar selfi dengan ktp");
+//                            err++;
+//                        }
                     }
                 } else {
 
@@ -674,9 +749,6 @@ public class FormPengajuan extends AppCompatActivity {
 
 
                 }
-
-
-                //////////////// Submit
 
                 String sts_rmh = txStatusRumah.getText().toString();
                 switch (sts_rmh) {
@@ -741,7 +813,7 @@ public class FormPengajuan extends AppCompatActivity {
                     params.put("nama_hrd", txNamaHrd.getText().toString());
                     params.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
                     params.put("kota_perusahaan", txKotaP.getText().toString());
-                    params.put("status_kontrak", txStatusKerja.getText().toString());
+                    params.put("status_kontrak", txStatusKerja.getSelectedItem().toString());
                     params.put("batas_kontrak", txBatasKontrak.getText().toString());
                     params.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
                     params.put("besar_gaji", gj);
@@ -771,7 +843,9 @@ public class FormPengajuan extends AppCompatActivity {
 //                        PengajuanProsesLogin();
 //                        AsyncTaskRunner task = new AsyncTaskRunner();
 //                        task.execute();
+
                         UpdateSetujui();
+                        addselfi();
                     } else {
                         progressDialog.show();
                         SaveLog();
@@ -779,6 +853,7 @@ public class FormPengajuan extends AppCompatActivity {
                         task.execute();
                     }
                 }
+
 
                 break;
             case R.id.btKtpTake:
@@ -799,7 +874,7 @@ public class FormPengajuan extends AppCompatActivity {
                 break;
             case R.id.btSelfiTake:
                 if (checkPermission()) {
-                    takeImageSelfi(view);
+                    takeImageSelfi();
                 }
                 break;
         }
@@ -870,6 +945,64 @@ public class FormPengajuan extends AppCompatActivity {
 
     }
 
+    private void GetKota() {
+
+        final StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_HQ + "ref_kota.php?kodepos_kabupaten=" + txKotaP.getText().toString(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                try {
+
+                    listCust.clear();
+                    listCustDetail.clear();
+
+                    JSONArray ja = new JSONArray(response);
+
+                    for (int i = 0; i < ja.length(); i++) {
+                        JSONObject jos = ja.getJSONObject(i);
+
+                        String kab = jos.getString("kodepos_kabupaten");
+
+                        HashMap<String, String> cust = new HashMap<>();
+
+                        cust.put("kabupaten", kab);
+                        listCust.add(kab);
+                        listCustDetail.add(cust);
+
+                    }
+
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                            (FormPengajuan.this, android.R.layout.simple_dropdown_item_1line, listCust);
+
+
+                    txKotaP.setAdapter(adapter);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    //ShowToast("Request Timeout");
+                }
+
+                custSearch = false;
+                pbKota.setVisibility(View.INVISIBLE);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                custSearch = false;
+                pbKota.setVisibility(View.INVISIBLE);
+            }
+
+        });
+
+        stringRequest.setTag(AppConf.httpTag);
+        VolleyHttp.getInstance(FormPengajuan.this).addToRequestQueue(stringRequest);
+
+    }
+
     public void onRadioButtonClicked() {
         // Is the button now checked?
         int id = rG.getCheckedRadioButtonId();
@@ -881,6 +1014,28 @@ public class FormPengajuan extends AppCompatActivity {
                 jk = "perempuan";
                 break;
         }
+    }
+
+    private void Rating() {
+        String idclient = new SessionManager(FormPengajuan.this).getIduser();
+        Map<String, String> params = new HashMap<String, String>();
+
+        stringRequest = new StringRequest(Request.Method.GET, RATING + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d("jjj", response);
+
+//                sBunga = Float.parseFloat(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(FormPengajuan.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
     }
 
     private void InitSpin() {
@@ -963,6 +1118,7 @@ public class FormPengajuan extends AppCompatActivity {
                 txLamaTahun.setText(lama_tinggal_tahun);
                 txLamaBulan.setText(lama_tinggal_bulan);
                 txKodeArea.setText(kodearea);
+                etKodeTelp.setText(kodearea);
                 txTelpRumah.setText(telepon);
                 txHandPhone.setText(handphone);
                 txNamaPerusahaan.setText(perusahaan);
@@ -971,7 +1127,7 @@ public class FormPengajuan extends AppCompatActivity {
                 txNamaHrd.setText(nama_hrd);
                 txAlamatPerusahaan.setText(alamat_perusahaan);
                 txKotaP.setText(kota_perusahaan);
-                txStatusKerja.setText(status_kontrak);
+//                txStatusKerja.setText(status_kontrak);
                 txBatasKontrak.setText(batas_kontrak);
                 txTelpPerusahaan.setText(telepon_perusahaan);
                 txGajiPerbulan.setText(DecimalsFormat.priceWithoutDecimal(besar_gaji));
@@ -1046,6 +1202,8 @@ public class FormPengajuan extends AppCompatActivity {
             viewList.add(txNoRekening);
 //            viewList.add(spTujuan);
 //            viewList.add(rG);
+
+
         } else {
             lyNoLogin.setVisibility(View.GONE);
             lySlip.setVisibility(View.VISIBLE);
@@ -1130,6 +1288,23 @@ public class FormPengajuan extends AppCompatActivity {
         ArrayAdapter<String> adapter3 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, STATUS_KJR);
         txStatusKerja.setAdapter(adapter3);
+
+//        txStatusKerja.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String mSelectedText = parent.getItemAtPosition(position).toString();
+//
+//                int mSelectedId = position;
+//
+//                Toast.makeText(FormPengajuan.this, "you winn!!!" + mSelectedText, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(FormPengajuan.this, "posisi" + String.valueOf(mSelectedId), Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
         ArrayAdapter<String> adapter4 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, LAMA_THN);
@@ -1243,7 +1418,6 @@ public class FormPengajuan extends AppCompatActivity {
 
     }
 
-
     private void SaveLog() {
 
         final HashMap<String, String> tmp = new HashMap<>();
@@ -1282,7 +1456,7 @@ public class FormPengajuan extends AppCompatActivity {
         tmp.put("nama_hrd", txNamaHrd.getText().toString());
         tmp.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
         tmp.put("kota_perusahaan", txKotaP.getText().toString());
-        tmp.put("status_kontrak", txStatusKerja.getText().toString());
+        tmp.put("status_kontrak", txStatusKerja.getSelectedItem().toString());
         tmp.put("batas_kontrak", txBatasKontrak.getText().toString());
         tmp.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
         tmp.put("besar_gaji", gj);
@@ -1325,6 +1499,61 @@ public class FormPengajuan extends AppCompatActivity {
         stringRequest.setTag(AppConf.httpTag);
         VolleyHttp.getInstance(FormPengajuan.this).addToRequestQueue(stringRequest);
 
+    }
+
+    private void addselfi() {
+        loading.show();
+        StringRequest strReq = new StringRequest(Request.Method.POST, UPLOADSELFI, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+                Toast.makeText(FormPengajuan.this, "Berhasil Di Input Ke database", Toast.LENGTH_SHORT).show();
+                loading.dismiss();
+                finish();
+                try {
+                    final JSONObject jObj = new JSONObject(response.toString());
+
+                    if (response.equals("Berhasil")) {
+                        Toast.makeText(FormPengajuan.this, "Berhasil Di Input Ke database", Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(FormPengajuan.this,
+                                jObj.getString("message"), Toast.LENGTH_LONG).show();
+
+                    }
+                } catch (JSONException e) {
+                    // JSON error
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error: ", error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_LONG).show();
+
+                loading.dismiss();
+
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("no_ktp", txNoKtp.getText().toString());
+                if (decoded != null) {
+                    params.put("foto_selfi", getStringImagezz(decoded));
+                }
+                return params;
+            }
+
+        };
+        requestQueue.add(strReq);
     }
 
     private void spinJenisPekerjaan() {
@@ -1444,10 +1673,14 @@ public class FormPengajuan extends AppCompatActivity {
 
 
             if (sessionManager.checkLogin()) {
+
+
                 multipart.addFormField("_session", sessionManager.getSession());
                 multipart.addFormField("amount", jumlah);
                 multipart.addFormField("duration", periode);
                 multipart.addFormField("tujuan_pinjam", spTujuan.getSelectedItem().toString());
+
+
             } else {
 
                 String gj = txGajiPerbulan.getText().toString();
@@ -1486,7 +1719,7 @@ public class FormPengajuan extends AppCompatActivity {
                 multipart.addFormField("nama_hrd", txNamaHrd.getText().toString());
                 multipart.addFormField("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
                 multipart.addFormField("kota_perusahaan", txKotaP.getText().toString());
-                multipart.addFormField("status_kontrak", txStatusKerja.getText().toString());
+                multipart.addFormField("status_kontrak", txStatusKerja.getSelectedItem().toString());
                 multipart.addFormField("batas_kontrak", txBatasKontrak.getText().toString());
                 multipart.addFormField("telepon_perusahaan", txTelpPerusahaan.getText().toString());
                 multipart.addFormField("besar_gaji", gj);
@@ -1504,7 +1737,6 @@ public class FormPengajuan extends AppCompatActivity {
 
             }
 
-            //Tooat(image1+" ===== "+image2+" ===== "+image3+" ====== "+image4);
             if (image1 != null) {
                 File imageFile = new File(image1);
                 multipart.addFilePart("file_ktp", imageFile);
@@ -1523,11 +1755,11 @@ public class FormPengajuan extends AppCompatActivity {
 
             }
 
-            if (image4 != null) {
-                File imageFile = new File(image4);
-                multipart.addFilePart("file_selfi", imageFile);
-
-            }
+//            if (image4 != null) {
+//                File imageFile = new File(image4);
+//                multipart.addFilePart("file_selfi", imageFile);
+//
+//            }
 
             List<String> response = multipart.finish();
 
@@ -2027,30 +2259,43 @@ public class FormPengajuan extends AppCompatActivity {
             }
         }
 
+//        if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
+//            if (btSelfiTake.isClickable()) {
+//                try {
+//                    if (mHighQualityImageUri == null) {
+//                        GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
+//                    } else {
+//                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
+//                        MediaProcess.bitmapToFile(bmp, outFileSelfi.getAbsolutePath(), 30);
+//                        scale = MediaProcess.scaledBitmap(outFileSelfi.getAbsolutePath());
+//                        MediaProcess.bitmapToFile(scale, outFileSelfi.getAbsolutePath(), 30);
+//                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
+//                        image4 = outFileSelfi.getAbsolutePath();
+//                        txSelfi.setVisibility(View.GONE);
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+
         if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
             if (btSelfiTake.isClickable()) {
-                try {
-                    if (mHighQualityImageUri == null) {
-                        GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
-                    } else {
-                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
-                        MediaProcess.bitmapToFile(bmp, outFileSelfi.getAbsolutePath(), 30);
-                        scale = MediaProcess.scaledBitmap(outFileSelfi.getAbsolutePath());
-                        MediaProcess.bitmapToFile(scale, outFileSelfi.getAbsolutePath(), 30);
-                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
-                        image4 = outFileSelfi.getAbsolutePath();
-                        txSelfi.setVisibility(View.GONE);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                setToImageView(bitmap);
             }
         }
     }
 
+    private void setToImageView(Bitmap bmp) {
+        //compress image
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, bitmap_size, bytes);
+        decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(bytes.toByteArray()));
+        imgSelfi.setImageBitmap(decoded);
+    }
+
     public void takeImageKTP(View view) {
-//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivityForResult(cameraIntent, TAKE_IMAGE);
 
         FileModel fileModel = generateTimeStampPhotoFileUri();
         mHighQualityImageUri = fileModel.getUriPath();
@@ -2081,14 +2326,18 @@ public class FormPengajuan extends AppCompatActivity {
         startActivityForResult(intent, TAKE_IMAGE3);
     }
 
-    public void takeImageSelfi(View view) {
-
-        FileModel fileModel = generateTimeStampPhotoFileUri();
-        mHighQualityImageUri = fileModel.getUriPath();
-        outFileSelfi = fileModel.getFilePath();
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
-        startActivityForResult(intent, TAKE_IMAGE4);
+    //    public void takeImageSelfi(View view) {
+//
+//        FileModel fileModel = generateTimeStampPhotoFileUri();
+//        mHighQualityImageUri = fileModel.getUriPath();
+//        outFileSelfi = fileModel.getFilePath();
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
+//        startActivityForResult(intent, TAKE_IMAGE4);
+//    }
+    public void takeImageSelfi() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, TAKE_IMAGE4);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -2232,13 +2481,20 @@ public class FormPengajuan extends AppCompatActivity {
         return encodedImage;
     }
 
+    public String getStringImagezz(Bitmap bmp) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, bitmap_size, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
+    }
+
     private void showFileChooser(int code) {
         Intent in = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         in.setType("image/*");
         in.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(in, "Select Image"), code);
     }
-
 
     private FileModel generateTimeStampPhotoFileUri() {
 
@@ -2256,7 +2512,6 @@ public class FormPengajuan extends AppCompatActivity {
 
         return fileModel;
     }
-
 
     private File getPhotoDirectory() {
         File outputDir = null;

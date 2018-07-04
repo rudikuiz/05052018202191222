@@ -48,6 +48,8 @@ public class SessionManager {
 
     public static final String VTOKEN = "token";
 
+    public static final String FIRSTLOOK = "firstLook";
+
     public SessionManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -81,10 +83,39 @@ public class SessionManager {
 
     }
 
+    public void setFirstlook() {
+
+        editor.putBoolean(FIRSTLOOK, true);
+        editor.commit();
+    }
+
+    public boolean checkFirstLook() {
+        // Check login status
+
+        boolean stLook = true;
+
+        if (!this.isFirstLook()) {
+
+            stLook = false;
+        }
+
+        return stLook;
+
+    }
+
     public void logoutUser() {
         // Clearing all data from Shared Preferences
+        boolean look = false;
+        if (this.checkFirstLook()) {
+            look = true;
+        }
+
         editor.clear();
         editor.commit();
+
+        if (look) {
+            this.setFirstlook();
+        }
 
 
     }
@@ -103,6 +134,10 @@ public class SessionManager {
 
     public boolean isLoggedIn() {
         return pref.getBoolean(IS_LOGIN, false);
+    }
+
+    public boolean isFirstLook() {
+        return pref.getBoolean(FIRSTLOOK, false);
     }
 
     public String getIduser() {
@@ -144,7 +179,6 @@ public class SessionManager {
     public String getIdhq() {
         return pref.getString(KEY_ID_HQ, null);
     }
-
 
     public boolean getInChat() {
         return pref.getBoolean(KEY_INCHAT, false);
@@ -209,7 +243,6 @@ public class SessionManager {
         editor.putString(VTOKEN, value);
         editor.commit();
     }
-
 
 
 }

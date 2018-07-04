@@ -212,6 +212,7 @@ public class Bayar extends AppCompatActivity {
                 finish();
                 break;
             case R.id.btAction:
+
                 break;
         }
     }

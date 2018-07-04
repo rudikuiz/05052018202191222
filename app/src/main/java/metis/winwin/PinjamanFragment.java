@@ -3,9 +3,11 @@ package metis.winwin;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +42,13 @@ import metis.winwin.Utils.AndLog;
 import metis.winwin.Utils.AppConf;
 import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
+import metis.winwin.Utils.GlobalToast;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
+
+import static android.content.Context.MODE_PRIVATE;
+import static metis.winwin.Utils.AppConf.GET_MAX_PINJAMAN;
+import static metis.winwin.Utils.AppConf.JUMLAH_PINJAMAN;
 
 
 /**
@@ -76,6 +83,8 @@ public class PinjamanFragment extends Fragment {
     TextView text;
     @Bind(R.id.btLogin)
     Button btLogin;
+    @Bind(R.id.linF)
+    Button linF;
 
     private double sJumlah, total_byr, sBunga;
     private int sPeriode;
@@ -87,7 +96,7 @@ public class PinjamanFragment extends Fragment {
     RequestQueue requestQueue;
     private int max, val, batas;
     private boolean isFisrt;
-
+    String rating;
 
     public PinjamanFragment() {
         // Required empty public constructor
@@ -104,7 +113,6 @@ public class PinjamanFragment extends Fragment {
         requestQueue = Volley.newRequestQueue(getContext());
         sessionManager = new SessionManager(activity);
 
-
         isFisrt = false;
 
         mActivity = getActivity();
@@ -115,6 +123,9 @@ public class PinjamanFragment extends Fragment {
         max = 2000000;
         batas = (max - 500000) / 100000;
 
+//        CheckDisetujui();
+//        getMaxPinjaman();
+//        setSbJumlah();
 
         sbJumlah.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -142,6 +153,60 @@ public class PinjamanFragment extends Fragment {
                 }
 
                 hitungUlang();
+
+//                LAWAAS DIATAS
+//                YANG BARU DIBAWAH
+
+//                if (!sessionManager.isLoggedIn()) {
+//                    if (i > 15) {
+//                        sbJumlah.setProgress(15);
+//                        if (!isFisrt) {
+//                            Toast.makeText(mActivity, "Khusus repeat customer", Toast.LENGTH_SHORT).show();
+//                            isFisrt = true;
+//                        }
+//                    }
+//
+//                } else {
+//                    if (maxClient.contains("Maksimal 2 Juta")) {
+//                        if (i > 15) {
+//                            sbJumlah.setProgress(15);
+//                            if (!isFisrt) {
+//                                Toast.makeText(getContext(), "Sorry, Maksimal 2 Juta", Toast.LENGTH_SHORT).show();
+//                                isFisrt = true;
+//                            }
+//                        }
+//                    }
+//
+//                    if (maxClient.contains("Maksimal 3 Juta")) {
+//                        if (i > 25) {
+//                            sbJumlah.setProgress(25);
+//                            if (!isFisrt) {
+//                                Toast.makeText(getContext(), "Sorry, Maksimal 3 Juta", Toast.LENGTH_SHORT).show();
+//                                isFisrt = true;
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//                    if (maxClient.contains("Maksimal 4 Juta")) {
+//                        if (i > 35) {
+//                            sbJumlah.setProgress(35);
+//                            if (!isFisrt) {
+//                                Toast.makeText(getContext(), "Sorry, Maksimal 4 Juta", Toast.LENGTH_SHORT).show();
+//                                isFisrt = true;
+//                            }
+//                        }
+//                    }
+//
+//                    if (maxClient.contains("Maksimal 5 Juta")) {
+//                        if (i > 45) {
+//                            sbJumlah.setProgress(45);
+//                        }
+//
+//                    }
+//
+//                }
 
             }
 
@@ -197,6 +262,84 @@ public class PinjamanFragment extends Fragment {
         return view;
     }
 
+    private void getMaxPinjaman() {
+
+        String idclient = new SessionManager(mActivity).getIduser();
+        stringRequest = new StringRequest(Request.Method.GET, GET_MAX_PINJAMAN + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+                maxClient = response;
+                Log.d("asssd", maxClient);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
+    }
+
+    private void setSbJumlah() {
+        String idclient = new SessionManager(mActivity).getIduser();
+
+        stringRequest = new StringRequest(Request.Method.GET, JUMLAH_PINJAMAN + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jos = new JSONObject(response);
+                    val = jos.getInt("jml");
+                    if (val == 0) {
+                        maxClient = "Maksimal 2 Juta";
+                        sBunga = 0.99;
+                    } else if (val == 1) {
+                        maxClient = "Maksimal 2 Juta";
+                        sBunga = 0.99;
+                    } else if (val == 2) {
+                        maxClient = "Maksimal 2 Juta";
+                        sBunga = 0.79;
+                    } else if (val == 3) {
+                        maxClient = "Maksimal 2 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 4) {
+                        maxClient = "Maksimal 3 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 5) {
+                        maxClient = "Maksimal 3 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 6) {
+                        maxClient = "Maksimal 4 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 7) {
+                        maxClient = "Maksimal 4 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 8) {
+                        maxClient = "Maksimal 4 Juta";
+                        sBunga = 0.59;
+                    } else if (val == 9) {
+                        maxClient = "Maksimal 5 Juta";
+                        sBunga = 0.59;
+                    }
+
+                    txBungaPersen.setText("( Bunga " + sBunga + " % / Hari )");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
+    }
 
     private void ConvertTgl(int adds) {
 
@@ -217,21 +360,42 @@ public class PinjamanFragment extends Fragment {
         ButterKnife.unbind(this);
     }
 
-    @OnClick({R.id.txTanggal, R.id.btPinjam, R.id.btLogin})
+    @OnClick({R.id.txTanggal, R.id.btPinjam, R.id.btLogin, R.id.linF})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txTanggal:
                 break;
             case R.id.btPinjam:
-                Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
-                formPengajuan.putExtra("jumlah", sJumlah + "");
-                formPengajuan.putExtra("periode", sPeriode + "");
-                formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
-                formPengajuan.putExtra("total_byr", total_byr + "");
-                startActivity(formPengajuan);
+                if (sessionManager.checkLogin()){
+                    String ratingNow = sessionManager.getRating();
+                    if (ratingNow.equals("5")){
+                        GlobalToast.ShowToast(mActivity, "Maaf, Akun anda telah berada pada Rating 5, Anda tidak bisa mengajukan pinjaman. Segera Hubungi Admin Winwin");
+                    }else if (ratingNow.equals("4")){
+                        GlobalToast.ShowToast(mActivity, "Maaf, Akun anda telah berada pada Rating 4, Anda tidak bisa mengajukan pinjaman selama 90 Hari. Bila ada yang belum jelas bisa menghubungi Admin Winwin");
+                    } else{
+                        Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+                        formPengajuan.putExtra("jumlah", sJumlah + "");
+                        formPengajuan.putExtra("periode", sPeriode + "");
+                        formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+                        formPengajuan.putExtra("total_byr", total_byr + "");
+                        startActivity(formPengajuan);
+                    }
+                }else {
+                    Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+                    formPengajuan.putExtra("jumlah", sJumlah + "");
+                    formPengajuan.putExtra("periode", sPeriode + "");
+                    formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+                    formPengajuan.putExtra("total_byr", total_byr + "");
+                    startActivity(formPengajuan);
+                }
+
+
                 break;
             case R.id.btLogin:
                 startActivity(new Intent(mActivity, Login.class));
+                break;
+            case R.id.linF:
+                startActivity(new Intent(mActivity, ForgotPassword.class));
                 break;
         }
     }
@@ -257,10 +421,16 @@ public class PinjamanFragment extends Fragment {
                 max = 2000000;
             }
 
+
+
             CheckDisetujui();
             btLogin.setVisibility(View.GONE);
+            linF.setVisibility(View.GONE);
+        }else {
+            linF.setVisibility(View.VISIBLE);
         }
 
+        batas = (max - 500000) / 100000;
         txBungaPersen.setText("( Bunga " + sBunga + " % / Hari )");
         hitungUlang();
 
@@ -294,7 +464,7 @@ public class PinjamanFragment extends Fragment {
 
 
                                 String max_pinjam = jo.getString("max_pinjam");
-                                String rating = jo.getString("rating");
+                                rating = jo.getString("rating");
                                 String total_setujui = jo.getString("pinjaman");
 
                                 sess.setMaxpinjam(max_pinjam);
@@ -304,11 +474,13 @@ public class PinjamanFragment extends Fragment {
                                 max = Integer.parseInt(max_pinjam);
                                 batas = (max - 500000) / 100000;
 
-
                                 txBungaPersen.setText("( Bunga " + sBunga + " % / Hari )");
 
                                 hitungUlang();
 
+
+                                Log.d("dddrating", rating);
+                                Log.d("ddMax", String.valueOf(max));
                             }
                         }
 
@@ -319,6 +491,7 @@ public class PinjamanFragment extends Fragment {
 
 
                 }
+
 
             }
         }, new Response.ErrorListener() {
@@ -362,7 +535,6 @@ public class PinjamanFragment extends Fragment {
         txTotal.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(total_byr + ""));
 
     }
-
 
     @Override
     public void onDestroy() {

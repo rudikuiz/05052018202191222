@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -84,9 +85,10 @@ public class BayarRequest extends AppCompatActivity {
         if (nilai < min){
             GlobalToast.ShowToast(BayarRequest.this, "Maaf tidak boleh kurang dari 150,000");
         }else {
+            //            Bayar sebagian
             Intent in = new Intent(BayarRequest.this, MetodePembayaran.class);
-//            in.putExtra("token", etNilaiPinjam.getText().toString());
-            sessionManager.setToken(etNilaiPinjam.getText().toString());
+            in.putExtra("pass", "0");
+            in.putExtra("nilaisebagian", etNilaiPinjam.getText().toString());
             startActivity(in);
         }
     }

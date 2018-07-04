@@ -323,4 +323,7 @@
     <string name="metode">Metode Pembayaran</string>
     <string name="notedtrans">Berikut nomor Virtual Account PT. Progo Puncak Group. 11111 + Nomor HP anda yang terdaftar di aplikasi.</string>
     <string name="bcava">BCA Virtual Account</string>
+    <string name="term">Dengan menggunakan aplikasi winwin mobile apps, saya menyetujui <u>syarat dan ketentuan</u> yang berlaku.</string>
+    <string name="term2">syarat dan ketentuan</string>
+    <string name="term3">yang berlaku.</string>
 </resources>

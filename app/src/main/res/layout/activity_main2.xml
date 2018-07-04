@@ -71,6 +71,7 @@
             android:fontFamily="monospace"
             android:gravity="center"
             android:padding="10dp"
+            android:inputType="number"
             android:textColor="@color/abuabu"
             android:textSize="30sp"
             android:textStyle="bold" />

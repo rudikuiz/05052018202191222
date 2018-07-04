@@ -49,6 +49,7 @@ public class BCATransfer extends AppCompatActivity {
     TextView downtime;
     SharedPreferences sharedPreferences;
     private SessionManager sessionManager;
+    String getval;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,8 @@ public class BCATransfer extends AppCompatActivity {
         sessionManager = new SessionManager(BCATransfer.this);
         requestQueue = Volley.newRequestQueue(BCATransfer.this);
         sharedPreferences = getSharedPreferences("save", Context.MODE_PRIVATE);
-
+        Intent intent = getIntent();
+        getval = intent.getStringExtra("nilai");
         load();
         DialogForm();
 
@@ -92,8 +94,9 @@ public class BCATransfer extends AppCompatActivity {
             protected Map<String, String> getParams() {
 
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("pinjam", sessionManager.getToken());
+                params.put("pinjam", getval);
                 params.put("cli_id", sessionManager.getIdhq());
+                AndLog.ShowLog("yoibs", params.toString());
                 return params;
             }
         };

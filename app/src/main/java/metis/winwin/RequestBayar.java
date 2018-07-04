@@ -1,6 +1,7 @@
 package metis.winwin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -103,7 +104,10 @@ public class RequestBayar extends AppCompatActivity {
 
     @OnClick(R.id.btBack)
     public void onViewClicked() {
-        finish();
+//        finish();
+        Intent intent = new Intent(RequestBayar.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void getJSON() {

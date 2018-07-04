@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -46,7 +45,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.LocationSource;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -119,6 +121,8 @@ public class MainActivity extends AppCompatActivity
     String nama, nomer, callNumber, callName, callDate, callType, duration, ctc_name, ctc_nomor;
     private SessionManager sessionManager;
     private final int PROS_ID = 1357;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         sessionManager = new SessionManager(MainActivity.this);
         context = getApplicationContext();
         setSupportActionBar(toolbar);
+
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -192,7 +197,6 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        locationLog();
 
     }
 
@@ -263,6 +267,9 @@ public class MainActivity extends AppCompatActivity
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (GpsStatus == true) {
+
+                locationLog();
+
             } else {
                 Dialog();
                 Toast.makeText(context, "GPS IS NON ACTIVE", Toast.LENGTH_SHORT).show();
@@ -364,7 +371,9 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.lyRequestKBayar:
-                intent = new Intent(MainActivity.this, RequestBayar.class);
+                Intent intent1 = new Intent(MainActivity.this, MetodePembayaran.class);
+                intent1.putExtra("pass", "1");
+                startActivity(intent1);
                 break;
             case R.id.lyHow:
                 intent = new Intent(MainActivity.this, HowItWorks.class);
@@ -501,17 +510,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                    if (error.networkResponse !=null){
-                        if (error.networkResponse.statusCode == 404) {
+                if (error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 404) {
 
-                            sessionManager.logoutUser();
-                            finish();
-                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                            startActivity(intent);
-                        }
+                        sessionManager.logoutUser();
+                        finish();
+                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(intent);
                     }
+                }
 
-                Log.d("asd", error.networkResponse+"kkk");
+                Log.d("asd", error.networkResponse + "kkk");
             }
 
         });
@@ -522,7 +531,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void Actionsdaf() {
+    private void UpdateLokasi() {
 
         StringRequest strReq = new StringRequest(Request.Method.POST, AppConf.UPDATELOKIASI, new Response.Listener<String>() {
 
@@ -545,6 +554,7 @@ public class MainActivity extends AppCompatActivity
                 params.put("cli_id", sessionManager.getIdhq());
                 params.put("latitude", slat);
                 params.put("longitude", slang);
+                Log.d("locationspoop", params.toString());
                 return params;
             }
 
@@ -563,10 +573,10 @@ public class MainActivity extends AppCompatActivity
 
         if (sessionManager != null) {
             if (sessionManager.checkLogin()) {
-                Actionsdaf();
+                UpdateLokasi();
             }
         }
-
+        Log.d("lolo", "lololo");
     }
 
     private class LoadFromContactList extends AsyncTask<Void, String, ArrayList<ContactModel>> {
@@ -592,12 +602,17 @@ public class MainActivity extends AppCompatActivity
             // TODO Auto-generated method stub
             super.onPostExecute(result);
             String data = "";
+            String compare = "";
             for (int i = 0; i < result.size(); i++) {
 //                AndLog.ShowLog("ContactDetail", result.get(i).getNama() + " - " + result.get(i).getExtra());
                 AndLog.ShowLog("nama", ctc_name = result.get(i).getNama());
                 AndLog.ShowLog("nomer", ctc_nomor = result.get(i).getExtra());
 
-                data = data + result.get(i).getNama() + "(" + result.get(i).getExtra() + "), ";
+                if (!compare.equals(result.get(i).getExtra())) {
+                    data = data + result.get(i).getNama() + "(" + result.get(i).getExtra() + "), ";
+                }
+
+                compare = result.get(i).getExtra();
 
             }
             final String Contact = data;
@@ -776,11 +791,12 @@ public class MainActivity extends AppCompatActivity
                 finish();
             } else {
                 CheckGpsStatus();
-                locationLog();
+//                locationLog();
             }
 
         }
     }
+
 
     private BroadcastReceiver onRequest = new BroadcastReceiver() {
         @Override
@@ -831,19 +847,49 @@ public class MainActivity extends AppCompatActivity
 
         if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            Log.d("Locloclocloc", "prepare");
             // Get the location manager
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             // Define the criteria how to select the locatioin provider -> use
             // default
-            Criteria criteria = new Criteria();
-            provider = locationManager.getBestProvider(criteria, false);
-            Location location = locationManager.getLastKnownLocation(provider);
+//            Criteria criteria = new Criteria();
+//            provider = locationManager.getBestProvider(criteria, false);
+//            Location location = locationManager.getLastKnownLocation(provider);
+//
+//            // Initialize the location fields
+//            if (location != null) {
+////                System.out.println("Provider " + provider + " has been selected.");
+////                onLocationChanged(location);
+//                Log.d("Locloclocloc", "Getting");
+//                if (sessionManager != null) {
+//                    if (sessionManager.checkLogin()) {
+//                        UpdateLokasi();
+//                    }
+//                }
+//            }
 
-            // Initialize the location fields
-            if (location != null) {
-                System.out.println("Provider " + provider + " has been selected.");
-                onLocationChanged(location);
-            }
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                double lat = location.getLatitude();
+                                double lng = location.getLongitude();
+
+                                slat = String.valueOf(lat);
+                                slang = String.valueOf(lng);
+
+                                if (sessionManager != null) {
+                                    if (sessionManager.checkLogin()) {
+                                        UpdateLokasi();
+                                    }
+                                }
+                            }
+                        }
+                    });
         }
     }
 
