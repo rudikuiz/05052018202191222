@@ -107,10 +107,10 @@
                 android:textColor="@color/biru_border" />
 
             <TextView
+                android:id="@+id/txInform"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="@string/note2"
                 android:textColor="@color/biru_border" />
 
         </LinearLayout>

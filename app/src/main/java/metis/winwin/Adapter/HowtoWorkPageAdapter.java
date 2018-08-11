@@ -22,11 +22,13 @@ public class HowtoWorkPageAdapter extends PagerAdapter {
     Context context;
     int[] img;
     String[] text;
+    String[] title;
     LayoutInflater inflater;
 
-    public HowtoWorkPageAdapter(Context context, int[] img, String[] text) {
+    public HowtoWorkPageAdapter(Context context, int[] img, String [] title, String[] text) {
         this.context = context;
         this.img = img;
+        this.title = title;
         this.text = text;
 
     }
@@ -46,7 +48,7 @@ public class HowtoWorkPageAdapter extends PagerAdapter {
 
 
         ImageView imgHeadline;
-        TextView txJudul;
+        TextView txContent, txJudul;
 
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -54,10 +56,11 @@ public class HowtoWorkPageAdapter extends PagerAdapter {
                 false);
 
         imgHeadline = (ImageView) itemView.findViewById(R.id.imgSlide);
-        txJudul = (TextView) itemView.findViewById(R.id.txText);
+        txContent = (TextView) itemView.findViewById(R.id.txText);
+        txJudul = (TextView) itemView.findViewById(R.id.txTitle);
 
-        txJudul.setText(text[position]);
-
+        txJudul.setText(title[position]);
+        txContent.setText(text[position]);
 
 //        imgHeadline.setScaleType(ImageView.ScaleType.CENTER_CROP);
         Glide.with(context).load(img[position]).into(imgHeadline);

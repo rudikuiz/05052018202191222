@@ -43,8 +43,10 @@ public class RequestBayar extends AppCompatActivity {
     TextView text;
     @Bind(R.id.downtime)
     TextView downtime;
+    @Bind(R.id.txInform)
+    TextView txInform;
     private SessionManager sessionManager;
-    String  hasilku;
+    String hasilku;
     ArrayList<TokenModel> tokenModels = new ArrayList<>();
     RequestQueue requestQueue;
     StringRequest stringRequest;
@@ -73,6 +75,30 @@ public class RequestBayar extends AppCompatActivity {
         requestQueue = Volley.newRequestQueue(RequestBayar.this);
         getJSON();
 //        reverseTimer(1800);
+        CheckVirtualAccount();
+    }
+
+    private void CheckVirtualAccount() {
+        String idclient = sessionManager.getIdhq();
+        stringRequest = new StringRequest(Request.Method.GET, "https://hq.ppgwinwin.com/winwin/api/check_va_number.php?cli_id=" + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                if (response.equals("0")) {
+                    txInform.setText(getString(R.string.note2));
+                } else {
+                    txInform.setText(getString(R.string.noteva, response.toString()));
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
     }
 
     public void reverseTimer(int Seconds) {
@@ -117,11 +143,11 @@ public class RequestBayar extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
-             try {
+                try {
                     JSONObject json = new JSONObject(response);
                     StatusPinjamanMode dataClient = new StatusPinjamanMode();
                     dataClient.setTotaltagihan(json.getString("pengajuan_total_disetujui"));
-                    hasil.setText("Rp. "+ DecimalsFormat.priceWithoutDecimal(dataClient.getTotaltagihan())+",-");
+                    hasil.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getTotaltagihan()) + ",-");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -150,5 +176,11 @@ public class RequestBayar extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(RequestBayar.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 }

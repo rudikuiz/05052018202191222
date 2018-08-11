@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/biru_winwin"
             app:contentInsetEnd="0dp"
             app:contentInsetStart="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -33,15 +33,15 @@
                     android:layout_centerVertical="true"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
-                    android:src="@drawable/ic_back_grey" />
+                    android:src="@drawable/ic_back_white" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="@string/how_it_work"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/main_big_text" />
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/xmid_text" />
 
             </RelativeLayout>
 
@@ -53,7 +53,9 @@
         android:id="@+id/vPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/abl">
+        android:layout_below="@+id/abl"
+        android:layout_above="@+id/cpIndicator"
+        >
 
 
     </android.support.v4.view.ViewPager>
@@ -65,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:fillColor="@android:color/holo_red_dark"
+        app:fillColor="@color/biru_winwin"
         app:pageColor="@android:color/darker_gray"
         app:radius="5dp"
         app:strokeColor="@android:color/darker_gray"

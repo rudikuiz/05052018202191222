@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -26,7 +27,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +35,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.lyContact)
     LinearLayout lyContact;
     @Bind(R.id.lyHow)
-    LinearLayout lyHow;
+    RelativeLayout lyHow;
     @Bind(R.id.lyLogout)
     LinearLayout lyLogout;
     @Bind(R.id.txLogout)
@@ -107,6 +108,12 @@ public class MainActivity extends AppCompatActivity
     LocationManager locationManager;
     boolean GpsStatus;
     Context context;
+    @Bind(R.id.subMenu1)
+    TextView subMenu1;
+    @Bind(R.id.subMenu2)
+    TextView subMenu2;
+    @Bind(R.id.subMenu3)
+    TextView subMenu3;
     private String provider;
     int success;
     StringRequest stringRequest;
@@ -122,7 +129,7 @@ public class MainActivity extends AppCompatActivity
     private SessionManager sessionManager;
     private final int PROS_ID = 1357;
     private FusedLocationProviderClient mFusedLocationClient;
-
+    Intent intent = getIntent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,27 +163,27 @@ public class MainActivity extends AppCompatActivity
         sessionManager = new SessionManager(MainActivity.this);
 
 
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED
 //                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{
-                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION,
-                            android.Manifest.permission.GET_ACCOUNTS,
-                            android.Manifest.permission.READ_PHONE_STATE,
-                            android.Manifest.permission.READ_CONTACTS,
-                            android.Manifest.permission.WRITE_CONTACTS,
-                            android.Manifest.permission.READ_CALL_LOG,
-                            android.Manifest.permission.WRITE_CALL_LOG,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.GET_ACCOUNTS,
+                            Manifest.permission.READ_PHONE_STATE,
+                            Manifest.permission.READ_CONTACTS,
+                            Manifest.permission.WRITE_CONTACTS,
+                            Manifest.permission.READ_CALL_LOG,
+                            Manifest.permission.WRITE_CALL_LOG,
 
                     },
                     PROS_ID);
@@ -196,6 +203,10 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+
+        subMenu1.setText("* Cara Pengajuan");
+        subMenu2.setText("* Cara Pembayaran via Virtual Account");
+        subMenu3.setText("* Cara Pembayaran Bayar Sebagian & Req Kode Bayar");
 
 
     }
@@ -263,7 +274,7 @@ public class MainActivity extends AppCompatActivity
 
     public void CheckGpsStatus() {
 
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (GpsStatus == true) {
@@ -333,12 +344,21 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @OnClick({R.id.lyStatusPinjaman, R.id.lyHome, R.id.lyNotifikasi, R.id.lyHistoryPengajuan, R.id.lyRequestKBayar, R.id.lyContact, R.id.lyChat, R.id.lyBayar, R.id.lyHow, R.id.lyLogout, R.id.lyJanjiBayar})
+    @OnClick({R.id.lyStatusPinjaman, R.id.subMenu1, R.id.subMenu2, R.id.subMenu3, R.id.lyHome, R.id.lyNotifikasi, R.id.lyHistoryPengajuan, R.id.lyRequestKBayar, R.id.lyContact, R.id.lyChat, R.id.lyBayar, R.id.lyHow, R.id.lyLogout, R.id.lyJanjiBayar})
     public void onClick(View view) {
 
         Intent intent = null;
 
         switch (view.getId()) {
+            case R.id.subMenu1:
+                intent = new Intent(MainActivity.this, HowItWorks.class);
+                break;
+            case R.id.subMenu2:
+                intent = new Intent(MainActivity.this, HowItWork2Activity.class);
+                break;
+            case R.id.subMenu3:
+                intent = new Intent(MainActivity.this, HowItWork3Activity.class);
+                break;
             case R.id.lyHome:
                 break;
             case R.id.lyNotifikasi:
@@ -367,16 +387,16 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.lyBayar:
-                intent = new Intent(MainActivity.this, Bayar.class);
+                intent = new Intent(MainActivity.this, ConBayarSeb.class);
                 break;
 
             case R.id.lyRequestKBayar:
-                Intent intent1 = new Intent(MainActivity.this, MetodePembayaran.class);
-                intent1.putExtra("pass", "1");
-                startActivity(intent1);
+                intent = new Intent(MainActivity.this, MetodePembayaran.class);
+                intent.putExtra("pass", "1");
+
                 break;
             case R.id.lyHow:
-                intent = new Intent(MainActivity.this, HowItWorks.class);
+
                 break;
 
             case R.id.lyLogout:
@@ -480,6 +500,7 @@ public class MainActivity extends AppCompatActivity
 
             contactLog();
             callLog();
+            getJSON();
 
         } else {
             txLogout.setText(getString(R.string.login));
@@ -491,6 +512,7 @@ public class MainActivity extends AppCompatActivity
             lyNotifikasi.setVisibility(View.GONE);
             lyStatusPinjaman.setVisibility(View.GONE);
             lyJanjiBayar.setVisibility(View.GONE);
+
         }
 
 
@@ -498,6 +520,34 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
+
+    private void getJSON() {
+        String id_user = new SessionManager(MainActivity.this).getIduser();
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("id", id_user);
+
+        AndLog.ShowLog("tag_id_client", AppConf.URL_GET_ID_CLIENT + id_user);
+        stringRequest = new StringRequest(Request.Method.GET, AppConf.URL_GET_ID_CLIENT + id_user, new Response.Listener<String>() {
+            //            id = "54878";
+//            nama_lengkap = "ENTY YULL SENTY";
+            @Override
+            public void onResponse(String response) {
+                AndLog.ShowLog("id_client: ", response);
+                sessionManager.setIdhq(response);
+//                getCountPinjaman();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+
+            }
+        });
+        requestQueue.add(stringRequest);
+    }
+
 
     private void refreshSession() {
 
@@ -520,7 +570,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
-                Log.d("asd", error.networkResponse + "kkk");
+
             }
 
         });
@@ -554,7 +604,7 @@ public class MainActivity extends AppCompatActivity
                 params.put("cli_id", sessionManager.getIdhq());
                 params.put("latitude", slat);
                 params.put("longitude", slang);
-                Log.d("locationspoop", params.toString());
+
                 return params;
             }
 
@@ -576,7 +626,7 @@ public class MainActivity extends AppCompatActivity
                 UpdateLokasi();
             }
         }
-        Log.d("lolo", "lololo");
+
     }
 
     private class LoadFromContactList extends AsyncTask<Void, String, ArrayList<ContactModel>> {
@@ -693,7 +743,7 @@ public class MainActivity extends AppCompatActivity
 
             callName = curLog
                     .getString(curLog
-                            .getColumnIndex(android.provider.CallLog.Calls.CACHED_NAME));
+                            .getColumnIndex(CallLog.Calls.CACHED_NAME));
             if (callName == null) {
 //                conNames.add("Unknown");
                 finaldata = finaldata + "Unknown No : ";
@@ -702,17 +752,17 @@ public class MainActivity extends AppCompatActivity
                 finaldata = finaldata + callName + " No : ";
             }
             callNumber = curLog.getString(curLog
-                    .getColumnIndex(android.provider.CallLog.Calls.NUMBER));
+                    .getColumnIndex(CallLog.Calls.NUMBER));
 //            conNumbers.add(callNumber);
             finaldata = finaldata + callNumber;
 
             duration = curLog.getString(curLog
-                    .getColumnIndex(android.provider.CallLog.Calls.DURATION));
+                    .getColumnIndex(CallLog.Calls.DURATION));
 //            conTime.add(duration);
             finaldata = finaldata + " ( " + duration + " sec ) ";
 
             callDate = curLog.getString(curLog
-                    .getColumnIndex(android.provider.CallLog.Calls.DATE));
+                    .getColumnIndex(CallLog.Calls.DATE));
             SimpleDateFormat formatter = new SimpleDateFormat(
                     "dd-MMM-yyyy HH:mm");
             String dateString = formatter.format(new Date(Long
@@ -721,7 +771,7 @@ public class MainActivity extends AppCompatActivity
             finaldata = finaldata + dateString;
 
             callType = curLog.getString(curLog
-                    .getColumnIndex(android.provider.CallLog.Calls.TYPE));
+                    .getColumnIndex(CallLog.Calls.TYPE));
             if (callType.equals("1")) {
 //                conType.add("Incoming");
                 finaldata = finaldata + " ( Incoming ) , ";
@@ -809,34 +859,34 @@ public class MainActivity extends AppCompatActivity
 
                 String req = "";
 
-                if (type.equals(android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                if (type.equals(Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
-                    req = android.Manifest.permission.ACCESS_COARSE_LOCATION;
+                    req = Manifest.permission.ACCESS_COARSE_LOCATION;
 
-                } else if (type.equals(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                } else if (type.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-                    req = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                    req = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-                } else if (type.equals(android.Manifest.permission.CAMERA)) {
+                } else if (type.equals(Manifest.permission.CAMERA)) {
 
-                    req = android.Manifest.permission.CAMERA;
+                    req = Manifest.permission.CAMERA;
 
-                } else if (type.equals(android.Manifest.permission.RECORD_AUDIO)) {
+                } else if (type.equals(Manifest.permission.RECORD_AUDIO)) {
 
-                    req = android.Manifest.permission.RECORD_AUDIO;
+                    req = Manifest.permission.RECORD_AUDIO;
 
-                } else if (type.equals(android.Manifest.permission.READ_CONTACTS)) {
+                } else if (type.equals(Manifest.permission.READ_CONTACTS)) {
 
-                    req = android.Manifest.permission.READ_CONTACTS;
+                    req = Manifest.permission.READ_CONTACTS;
 
-                } else if (type.equals(android.Manifest.permission.READ_CALL_LOG)) {
+                } else if (type.equals(Manifest.permission.READ_CALL_LOG)) {
 
-                    req = android.Manifest.permission.READ_CALL_LOG;
+                    req = Manifest.permission.READ_CALL_LOG;
 
                 }
 
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         PROS_ID);
 
             }
@@ -845,9 +895,9 @@ public class MainActivity extends AppCompatActivity
 
     public void locationLog() {
 
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            Log.d("Locloclocloc", "prepare");
+
             // Get the location manager
 //            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             // Define the criteria how to select the locatioin provider -> use
@@ -900,7 +950,6 @@ public class MainActivity extends AppCompatActivity
             new LoadFromContactList().execute();
         }
     }
-
 
     public void callLog() {
 

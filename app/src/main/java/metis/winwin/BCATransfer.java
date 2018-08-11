@@ -48,13 +48,15 @@ public class BCATransfer extends AppCompatActivity {
     @Bind(R.id.downtime)
     TextView downtime;
     SharedPreferences sharedPreferences;
+    @Bind(R.id.txNote)
+    TextView txNote;
     private SessionManager sessionManager;
-    String getval;
+    String getval, val;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main3);
+        setContentView(R.layout.activity_bca_transfer);
         ButterKnife.bind(this);
         sessionManager = new SessionManager(BCATransfer.this);
         requestQueue = Volley.newRequestQueue(BCATransfer.this);
@@ -63,8 +65,32 @@ public class BCATransfer extends AppCompatActivity {
         getval = intent.getStringExtra("nilai");
         load();
         DialogForm();
-
+        CheckVirtualAccount();
     }
+
+    private void CheckVirtualAccount() {
+        String idclient = sessionManager.getIdhq();
+        stringRequest = new StringRequest(Request.Method.GET, " https://hq.ppgwinwin.com/winwin/api/check_va_number.php?cli_id=" + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                if (response.equals("0")) {
+
+                } else {
+                    txNote.setText(getString(R.string.noteva, response.toString()));
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
+    }
+
 
     private void load() {
         stringRequest = new StringRequest(Request.Method.POST, URL_POST_PINJAM, new Response.Listener<String>() {
@@ -133,7 +159,7 @@ public class BCATransfer extends AppCompatActivity {
                 int minutes = tempMint / 60;
                 seconds = tempMint - (minutes * 60);
 
-                downtime.setText("Sisa Waktu : "+String.format("%02d", minutes)
+                downtime.setText("Sisa Waktu : " + String.format("%02d", minutes)
                         + ":" + String.format("%02d", seconds));
             }
 
@@ -145,10 +171,18 @@ public class BCATransfer extends AppCompatActivity {
 
     @OnClick(R.id.btBack)
     public void onViewClicked() {
-//        Intent intent = new Intent(BCATransfer.this, MainActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
-        finish();
+        Intent intent = new Intent(BCATransfer.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+//        finish();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(BCATransfer.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

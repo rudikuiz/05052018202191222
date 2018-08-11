@@ -101,11 +101,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Bayar"
+            android:name=".ConBayarSeb"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".BayarRequest"
+            android:name=".BayarSebagian"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".BCATransfer"
@@ -126,7 +126,7 @@
             android:name=".MetodePembayaran"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".VirtualAccount"
+            android:name=".BCAVirtualAccount"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".WebViewVirtualAccount"
@@ -136,6 +136,18 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TermCondition"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".VerifyActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".VerifySuksesActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HowItWork2Activity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".HowItWork3Activity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

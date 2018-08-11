@@ -34,10 +34,10 @@ public class AppConf {
     public static final String URL_POST_PINJAM = URL_HQ + "api_sebagian.php";
     public static final String httpTag = "KillHttp";
     public static final String URL_GET_ID_CLIENT = URL_HQ + "get_id_client.php?id_client_web=";
-
+    public static final String URL_GET_ID_CLIENT_KTP = URL_HQ + "get_id_client_by_ktp.php?cli_no_ktp=";
     public static final String URL_GET_COUNT = URL_HQ + "count_client.php?id_client=";
     public static final String GET_BUNGA = URL_HQ + "bunga.php?id_client=";
-    public static final String GET_MAX_PINJAMAN = URL_HQ + "maksimal_pinjaman.php?id_client=";
+    public static final String GET_SKORS = URL_HQ + "data_client.php?cli_id=";
     public static final String GET_STATUS_PINJAMAN = URL_HQ + "detail_pengajuan.php?detail_pengajuan.php=";
     public static final int NOTIFICATION_ID = 1945;
     public static final String URL_GET_STATUS_PINJAMAN = URL_HQ + "status_pinjaman.php?cli_id=";
@@ -53,6 +53,7 @@ public class AppConf {
     public static final String UPLOADSELFI = URL_HQ + "insertselfi.php";
     public static final String RATING = URL_HQ + "rating.php?cli_id=";
     public static final String PING_PREF = "ping_notification";
-
+    public static final String URL_KODE_ACTIVATION = URL_HQ + "activationdata.php?no_ktp=";
+    public static final String URL_ACTIVATED = URL_HQ + "activated_user.php?no_ktp=";
     public static final int PING_INTERVAL = 120000;
 }

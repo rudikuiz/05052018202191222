@@ -258,7 +258,7 @@
 
                 </LinearLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/lyHow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -273,13 +273,46 @@
                         android:src="@drawable/how_it_work" />
 
                     <TextView
+                        android:id="@+id/Menu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="30dp"
+                        android:layout_marginLeft="44dp"
                         android:text="@string/how_it_work"
                         android:textColor="@android:color/black" />
 
-                </LinearLayout>
+                    <TextView
+                        android:id="@+id/subMenu1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/Menu"
+                        android:layout_alignStart="@+id/Menu"
+                        android:layout_below="@+id/Menu"
+                        android:padding="3dp"
+                        android:textColor="@color/biru_winwin"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/subMenu2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/Menu"
+                        android:layout_alignStart="@+id/Menu"
+                        android:layout_below="@+id/subMenu1"
+                        android:padding="3dp"
+                        android:textColor="@color/biru_winwin"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/subMenu3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/Menu"
+                        android:layout_alignStart="@+id/Menu"
+                        android:layout_below="@+id/subMenu2"
+                        android:padding="3dp"
+                        android:textColor="@color/biru_winwin"
+                        android:textStyle="bold" />
+                </RelativeLayout>
 
                 <LinearLayout
                     android:id="@+id/lyLogout"

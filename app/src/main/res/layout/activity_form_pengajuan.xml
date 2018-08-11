@@ -536,6 +536,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/handphone"
+                        android:maxLength="13"
                         android:inputType="numberDecimal|numberSigned" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -552,6 +553,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/no_hp_alternatif"
+                        android:maxLength="13"
                         android:inputType="numberDecimal|numberSigned" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -734,6 +736,7 @@
                     android:paddingRight="10dp">
 
                     <EditText
+                        android:maxLength="13"
                         android:id="@+id/txTelpPerusahaan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -820,7 +823,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/no_telp_klg_serumah"
-                        android:inputType="phone" />
+                        android:inputType="phone"
+                        android:maxLength="13"/>
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -853,7 +857,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/no_telp_klg_tdk_serumah"
-                        android:inputType="phone" />
+                        android:inputType="phone"
+                        android:maxLength="13"/>
 
                 </android.support.design.widget.TextInputLayout>
 

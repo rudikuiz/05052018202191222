@@ -81,8 +81,9 @@ public class MetodePembayaran extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Gagal Menyambungkan ke Server, silahkan coba kembali.", Toast.LENGTH_SHORT).show();
                 loading.dismiss();
+                finish();
             }
         });
         requestQueue.add(stringRequest);
@@ -102,12 +103,12 @@ public class MetodePembayaran extends AppCompatActivity {
             public void onResponse(String response) {
                 if (response.equals("1")) {
                     if (val.equals("0")) {
-//                        Bayar Sebagian
+//                        ConBayarSeb Sebagian
                         Intent intent = new Intent(MetodePembayaran.this, BCATransfer.class);
                         intent.putExtra("nilai", bayarsebagian);
                         startActivity(intent);
                     } else if (val.equals("1")) {
-//                        Bayar Penuh
+//                        ConBayarSeb Penuh
                         startActivity(new Intent(MetodePembayaran.this, RequestBayar.class));
                     }
 
@@ -138,7 +139,12 @@ public class MetodePembayaran extends AppCompatActivity {
             case R.id.btTransfer:
                 if (val.equals("0")) {
                     Intent intents = new Intent(MetodePembayaran.this, BCATransfer.class);
-                    intents.putExtra("nilai", bayarsebagian);
+                    if (bayarsebagian == null) {
+                        Toast.makeText(MetodePembayaran.this, "Nominal angka belum terbaca, mohon kembali ke halaman pengisian nominal", Toast.LENGTH_SHORT).show();
+                    } else {
+                        intents.putExtra("nilai", bayarsebagian);
+                    }
+
                     startActivity(intents);
                 } else if (val.equals("1")) {
                     startActivity(new Intent(MetodePembayaran.this, RequestBayar.class));
@@ -149,12 +155,15 @@ public class MetodePembayaran extends AppCompatActivity {
                 Intent intent1 = new Intent(MetodePembayaran.this, WebViewVirtualAccount.class);
                 intent1.putExtra("id_peng", id_peng);
                 intent1.putExtra("nama", nama);
+                //nilai ambil dari pengetikan
+
                 if (val.equals("0")) {
-//                    nilai ambil dari pengetikan
                     intent1.putExtra("nominal", bayarsebagian);
 
-                } else if (val.equals("1")) {
-//                    nilai ambil dari API
+                }
+
+                //nilai ambil dari API
+                else if (val.equals("1")) {
                     intent1.putExtra("nominal", nominal);
                 }
 

@@ -8,6 +8,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="main_text">15sp</dimen>
     <dimen name="mid_text">12sp</dimen>
+    <dimen name="xmid_text">14sp</dimen>
     <dimen name="second_text">10sp</dimen>
     <dimen name="main_big_text">17sp</dimen>
 </resources>

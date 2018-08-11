@@ -50,6 +50,10 @@ public class SessionManager {
 
     public static final String FIRSTLOOK = "firstLook";
 
+    public static final String KEY_STATUS_VA = "statusva";
+
+    public static final String KEY_SKORS = "skors";
+
     public SessionManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -244,5 +248,22 @@ public class SessionManager {
         editor.commit();
     }
 
+    public String getStatusVa() {
+        return pref.getString(KEY_STATUS_VA, null);
+    }
+
+    public void setKeyStatusVa(String val) {
+        editor.putString(KEY_STATUS_VA, val);
+        editor.commit();
+    }
+
+    public void setSkors(String value) {
+        editor.putString(KEY_SKORS, value);
+        editor.commit();
+    }
+
+    public String getSkors() {
+        return pref.getString(KEY_SKORS, null);
+    }
 
 }

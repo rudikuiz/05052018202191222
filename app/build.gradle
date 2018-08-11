@@ -13,8 +13,8 @@ android {
         applicationId "metis.winwin"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 37
-        versionName "1.36"
+        versionCode 45
+        versionName "1.44"
 
         multiDexEnabled true
 

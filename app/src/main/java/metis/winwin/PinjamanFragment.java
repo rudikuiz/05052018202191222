@@ -2,12 +2,12 @@ package metis.winwin;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -40,14 +41,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import metis.winwin.Utils.AndLog;
 import metis.winwin.Utils.AppConf;
+import metis.winwin.Utils.DataPinjamanManager;
 import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
-import metis.winwin.Utils.GlobalToast;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
 
-import static android.content.Context.MODE_PRIVATE;
-import static metis.winwin.Utils.AppConf.GET_MAX_PINJAMAN;
+import static metis.winwin.Utils.AppConf.GET_SKORS;
 import static metis.winwin.Utils.AppConf.JUMLAH_PINJAMAN;
 
 
@@ -85,10 +85,12 @@ public class PinjamanFragment extends Fragment {
     Button btLogin;
     @Bind(R.id.linF)
     Button linF;
+    @Bind(R.id.btAktifasi)
+    Button btAktifasi;
 
     private double sJumlah, total_byr, sBunga;
     private int sPeriode;
-    private String tglSkg, maxClient;
+    private String tglSkg, maxClient, skors;
     private FragmentActivity mActivity;
     StringRequest stringRequest;
     private SessionManager sessionManager;
@@ -96,7 +98,9 @@ public class PinjamanFragment extends Fragment {
     RequestQueue requestQueue;
     private int max, val, batas;
     private boolean isFisrt;
-    String rating;
+    String rating, no_ktp;
+    private final int MY_SOCKET_TIMEOUT_MS = 10 * 1000;
+
 
     public PinjamanFragment() {
         // Required empty public constructor
@@ -126,7 +130,7 @@ public class PinjamanFragment extends Fragment {
 //        CheckDisetujui();
 //        getMaxPinjaman();
 //        setSbJumlah();
-
+        getSors();
         sbJumlah.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -262,25 +266,79 @@ public class PinjamanFragment extends Fragment {
         return view;
     }
 
-    private void getMaxPinjaman() {
+    private void getKODE() {
+        DataPinjamanManager dataPinjamanManager = new DataPinjamanManager(mActivity);
+        if (dataPinjamanManager.isExisting()) {
+            try {
+                JSONObject jo = new JSONObject(dataPinjamanManager.getJson());
+                String getKTP = jo.getString("no_ktp");
+                no_ktp = getKTP + "";
 
-        String idclient = new SessionManager(mActivity).getIduser();
-        stringRequest = new StringRequest(Request.Method.GET, GET_MAX_PINJAMAN + idclient, new Response.Listener<String>() {
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        stringRequest = new StringRequest(Request.Method.GET, AppConf.URL_KODE_ACTIVATION + no_ktp, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
 
-                maxClient = response;
-                Log.d("asssd", maxClient);
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    String kode = jsonObject.getString("kode");
+                    AndLog.ShowLog("kodesd", kode);
+                    if (!kode.equals("null") && kode != null) {
+                        btAktifasi.setVisibility(View.VISIBLE);
+
+
+                    } else {
+                        btAktifasi.setVisibility(View.GONE);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    btAktifasi.setVisibility(View.GONE);
+
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                btAktifasi.setVisibility(View.GONE);
 
             }
         });
         requestQueue.add(stringRequest);
+    }
+
+    private void getSors() {
+
+        String idclient = new SessionManager(mActivity).getIdhq();
+        AndLog.ShowLog("urlskors", GET_SKORS + idclient);
+        stringRequest = new StringRequest(Request.Method.GET, GET_SKORS + idclient, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                skors = response;
+                sessionManager.setSkors(response);
+                AndLog.ShowLog("skors", skors);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), getString(R.string.gagal_data), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(stringRequest);
+
     }
 
     private void setSbJumlah() {
@@ -360,27 +418,56 @@ public class PinjamanFragment extends Fragment {
         ButterKnife.unbind(this);
     }
 
-    @OnClick({R.id.txTanggal, R.id.btPinjam, R.id.btLogin, R.id.linF})
+    @OnClick({R.id.txTanggal, R.id.btPinjam, R.id.btLogin, R.id.linF, R.id.btAktifasi})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txTanggal:
                 break;
             case R.id.btPinjam:
-                if (sessionManager.checkLogin()){
+                if (sessionManager.checkLogin()) {
+                    int error=0;
                     String ratingNow = sessionManager.getRating();
-                    if (ratingNow.equals("5")){
-                        GlobalToast.ShowToast(mActivity, "Maaf, Akun anda telah berada pada Rating 5, Anda tidak bisa mengajukan pinjaman. Segera Hubungi Admin Winwin");
-                    }else if (ratingNow.equals("4")){
-                        GlobalToast.ShowToast(mActivity, "Maaf, Akun anda telah berada pada Rating 4, Anda tidak bisa mengajukan pinjaman selama 90 Hari. Bila ada yang belum jelas bisa menghubungi Admin Winwin");
-                    } else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle("Pemberitahuan");
+                    if (ratingNow.equals("5")) {
+                        builder.setMessage(getString(R.string.rating_5));
+                    } else if (ratingNow.equals("4")) {
+                        if (skors.isEmpty()){
+                            Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+                            formPengajuan.putExtra("jumlah", sJumlah + "");
+                            formPengajuan.putExtra("periode", sPeriode + "");
+                            formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+                            formPengajuan.putExtra("total_byr", total_byr + "");
+                            startActivity(formPengajuan);
+                            error=1;
+                        }else {
+                            builder.setMessage(getString(R.string.rating_4, skors));
+                        }
+                    } else {
                         Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
                         formPengajuan.putExtra("jumlah", sJumlah + "");
                         formPengajuan.putExtra("periode", sPeriode + "");
                         formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
                         formPengajuan.putExtra("total_byr", total_byr + "");
                         startActivity(formPengajuan);
+                        error=1;
                     }
-                }else {
+
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+
+                    AlertDialog alert = builder.create();
+                    if (error==0){
+                        alert.show();
+                    }
+
+
+                } else {
                     Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
                     formPengajuan.putExtra("jumlah", sJumlah + "");
                     formPengajuan.putExtra("periode", sPeriode + "");
@@ -397,6 +484,10 @@ public class PinjamanFragment extends Fragment {
             case R.id.linF:
                 startActivity(new Intent(mActivity, ForgotPassword.class));
                 break;
+
+            case R.id.btAktifasi:
+                startActivity(new Intent(mActivity, VerifyActivity.class));
+                break;
         }
     }
 
@@ -409,6 +500,7 @@ public class PinjamanFragment extends Fragment {
 
         SessionManager sessionManager = new SessionManager(mActivity);
         if (sessionManager.checkLogin()) {
+            btAktifasi.setVisibility(View.GONE);
             String rate = sessionManager.getRate();
             String max_pinjam = sessionManager.getMaxpinjam();
             if (rate != null) {
@@ -422,17 +514,18 @@ public class PinjamanFragment extends Fragment {
             }
 
 
-
             CheckDisetujui();
             btLogin.setVisibility(View.GONE);
             linF.setVisibility(View.GONE);
-        }else {
+        } else {
+            getKODE();
             linF.setVisibility(View.VISIBLE);
         }
 
         batas = (max - 500000) / 100000;
         txBungaPersen.setText("( Bunga " + sBunga + " % / Hari )");
         hitungUlang();
+
 
     }
 
@@ -478,9 +571,6 @@ public class PinjamanFragment extends Fragment {
 
                                 hitungUlang();
 
-
-                                Log.d("dddrating", rating);
-                                Log.d("ddMax", String.valueOf(max));
                             }
                         }
 

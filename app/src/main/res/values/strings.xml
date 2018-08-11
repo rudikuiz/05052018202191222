@@ -111,7 +111,11 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="lipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</string>
+    <string name="lipsum">Long long time ago, there lived a great king in Bengkulu. His name is king Ratu Agung. He ruled Sungai Serut Kingdom for years and during those years, the people in the kingdom live peacefully and prosperous. The king has seven children. The last child was the only daughter in the family and her name is Putri Gading Cempaka.
+
+Putri Gading Cempaka was very beautiful and kind. There were so many noble man came to their kingdom to propose the princess but her father, king Ratu Agung, refused all of them because for him Putri Gading Cempaka was still too young to get married.
+
+One day, the king summon all of his children into his room. At that moment he was so weak and he said to all of them “My children, I think my time has come to leave you. I hope you all can keep your relationship as brother and sister. I have two important message that I want to tell you before I die. First, I appointed Anak Dalam as my sixth son to be the next king of our kingdom. I hope you all can accept my decision. Second, if a big disaster ever happened on this land and you think that there is nothing you can do to save it, go to Bungkuk mountain and stay there. Wait until a great king came to propose my daughter”. All of his children listened to his message carefully. None of them complained about it. A couple days later, the king passed away.</string>
 
     <string name="settings_name">AppRTC Settings</string>
     <string name="disconnect_call">Disconnect Call</string>
@@ -266,7 +270,7 @@
     <string name="FCM_TOKEN">Winwin.fcm_token</string>
 
     <string name="pengajuan_success">Data pengajuan berhasil dikirim. \nPengajuan yang masuk belum tentu disetujui dikarenakan ada kriteria tertentu dan kami bertanggung jawab sosial untuk melindungi pelanggan dari keterlibatan hutang.</string>
-    <string name="pengajuan_success_baru">Data pengajuan berhasil dikirim. \nPengajuan yang masuk belum tentu disetujui dikarenakan ada kriteria tertentu dan kami bertanggung jawab sosial untuk melindungi pelanggan dari keterlibatan hutang. \n\nAgar bisa login, verifikasi email Anda dengan cara klik tombol verifikasi pada email yang kami kirimkan. Segera cek email Anda!</string>
+    <string name="pengajuan_success_baru">Data pengajuan berhasil dikirim. \nPengajuan yang masuk belum tentu disetujui dikarenakan ada kriteria tertentu dan kami bertanggung jawab sosial untuk melindungi pelanggan dari keterlibatan hutang. \n\nAgar bisa login, verifikasi Email atau WhatsApp Anda dengan cara klik tombol verifikasi pada email atau Aktivasi Manual dengan kode WhatsApp yang kami kirimkan. Segera cek email atau WhatsApp Anda!</string>
     <string name="pengajuan_failed">Pengajuan gagal, Silahkan coba kembali</string>
 
 
@@ -322,8 +326,35 @@
     <string name="upload_selfi">Upload Foto Selfi Anda dengan memegang KTP</string>
     <string name="metode">Metode Pembayaran</string>
     <string name="notedtrans">Berikut nomor Virtual Account PT. Progo Puncak Group. 11111 + Nomor HP anda yang terdaftar di aplikasi.</string>
-    <string name="bcava">BCA Virtual Account</string>
+    <string name="bcava">Bayar Lunas Via Virtual Account</string>
     <string name="term">Dengan menggunakan aplikasi winwin mobile apps, saya menyetujui <u>syarat dan ketentuan</u> yang berlaku.</string>
     <string name="term2">syarat dan ketentuan</string>
     <string name="term3">yang berlaku.</string>
+    <string name="noteva">Berikut nomor Virtual Account PT. Progo Puncak Group. %1$s </string>
+    <string name="bca_transfer">BCA Transfer</string>
+    <string name="bca_va">BCA Virtual Account</string>
+    <string name="verify">Masukkan 6 digit kode verifikasi</string>
+    <string name="kamisudahmengirim">Kami sudah mengirim kode aktifasi melalui Whatsapp ke nomor %1$s </string>
+    <string name="tidakmenerimakode">tidak menerima kode lebih dari 2 menit?</string>
+    <string name="editnomor">Edit Nomor</string>
+    <string name="activate">Activate</string>
+    <string name="selamat">Selamat!</string>
+    <string name="akunandatelah">Akun anda telah diaktivasi silahkan cek status untuk melihat status pengajuan anda</string>
+    <string name="activatem">Aktivasi Akun Manual</string>
+    <string name="rating_4">Maaf, anda tidak dapat melakukan pinjaman sampai tanggal %1$s . Silahkan menghubungi Admin Winwin untuk info lebih lengkap.</string>
+    <string name="rating_5">Maaf, anda sudah tidak dapat melakukan pinjaman lagi. Segera Hubungi Admin Winwin</string>
+    <string name="transfer_pemb">Transfer pembayaran ke nomor virtual account kami :</string>
+    <string name="expand">expand</string>
+    <string name="collapse">cls</string>
+    <string name="atmbca">ATM BCA</string>
+    <string name="bcamobile">m - BCA (BCA mobile)</string>
+    <string name="internetbb">Internet Banking BCA</string>
+    <string name="kantorbankbca">Kantor Bank BCA</string>
+    <string name="atmbbanklain">ATM Bank Lain</string>
+    <string name="requesbayarsebagian">Request Bayar Sebagian</string>
+    <string name="requeskodebayar">Request Kode Bayar</string>
+    <string name="carapeng">Cara Pengajuan</string>
+    <string name="carapembvi">Cara Pembayaran via Virtual Account</string>
+    <string name="transferke">Transfer pembayaran ke nomor rekening :</string>
+
 </resources>

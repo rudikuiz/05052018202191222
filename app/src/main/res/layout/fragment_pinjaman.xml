@@ -22,6 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_margin="10dp"
+            android:paddingBottom="40dp"
             android:background="@drawable/rounded_view_putih"
             android:orientation="vertical">
 
@@ -271,7 +272,7 @@
                 android:id="@+id/btPinjam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="40dp"
@@ -282,6 +283,20 @@
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />
 
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btAktifasi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_view_hijau"
+                android:minHeight="10dp"
+                android:padding="10dp"
+                android:text="@string/activatem"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 
