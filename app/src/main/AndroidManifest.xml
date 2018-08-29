@@ -51,6 +51,11 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".Firebase.UpdateService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"

@@ -60,6 +60,8 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import metis.winwin.Firebase.PushNotification;
+import metis.winwin.Firebase.UpdateService;
 import metis.winwin.Model.ContactModel;
 import metis.winwin.Model.LogModel;
 import metis.winwin.Utils.AndLog;
@@ -281,6 +283,12 @@ public class MainActivity extends AppCompatActivity
 
                 locationLog();
 
+                boolean checkService = PushNotification.isMyServiceRunning(MainActivity.this, UpdateService.class);
+                if (!checkService && sessionManager.getIdhq() != null) {
+                    startService(new Intent(MainActivity.this, UpdateService.class));
+                }
+
+
             } else {
                 Dialog();
                 Toast.makeText(context, "GPS IS NON ACTIVE", Toast.LENGTH_SHORT).show();
@@ -481,7 +489,9 @@ public class MainActivity extends AppCompatActivity
     public void onResume() {
         super.onResume();
 
+
         if (sessionManager.checkLogin()) {
+
             sessionManager.setInCall(false);
             sessionManager.setInChat(false);
             txLogout.setText(getString(R.string.logout));

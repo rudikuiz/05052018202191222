@@ -54,6 +54,10 @@ public class SessionManager {
 
     public static final String KEY_SKORS = "skors";
 
+    public static final String KEY_LAT = "lat";
+
+    public static final String KEY_LNG = "lng";
+
     public SessionManager(Context context) {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
@@ -114,8 +118,13 @@ public class SessionManager {
             look = true;
         }
 
+        String idhq = this.getIdhq();
+
         editor.clear();
         editor.commit();
+
+
+        this.setIdhq(idhq);
 
         if (look) {
             this.setFirstlook();
@@ -187,6 +196,15 @@ public class SessionManager {
     public boolean getInChat() {
         return pref.getBoolean(KEY_INCHAT, false);
     }
+
+    public String getLat() {
+        return pref.getString(KEY_LAT, null);
+    }
+
+    public String getLng() {
+        return pref.getString(KEY_LNG, null);
+    }
+
 
     public void setNama(String nama) {
         editor.putString(KEY_NAMA, nama);
@@ -264,6 +282,16 @@ public class SessionManager {
 
     public String getSkors() {
         return pref.getString(KEY_SKORS, null);
+    }
+
+    public void setLat(String value) {
+        editor.putString(KEY_LAT, value);
+        editor.commit();
+    }
+
+    public void setLng(String value) {
+        editor.putString(KEY_LNG, value);
+        editor.commit();
     }
 
 }

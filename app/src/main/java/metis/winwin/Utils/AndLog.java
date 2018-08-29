@@ -8,7 +8,7 @@ import android.util.Log;
 public class AndLog {
 
 
-    private static boolean hide = false;
+    private static boolean hide = true;
 
     public static void ShowLog(String tag, String message) {
         if (!hide) {

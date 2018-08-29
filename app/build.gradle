@@ -13,8 +13,8 @@ android {
         applicationId "metis.winwin"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 45
-        versionName "1.44"
+        versionCode 46
+        versionName "1.45"
 
         multiDexEnabled true
 
@@ -49,6 +49,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.8.0'
     compile 'com.google.android.gms:play-services-maps:11.8.0'
     compile 'org.apache.httpcomponents:httpmime:4.2.3'
+
 
     testCompile 'junit:junit:4.12'
 }
