@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import metis.winwin.Adapter.OwnProgressDialog;
@@ -36,37 +36,43 @@ import metis.winwin.Utils.SessionManager;
 
 public class StatusPinjaman extends AppCompatActivity {
 
-    @Bind(R.id.etNoApl)
-    TextView etNoApl;
-    @Bind(R.id.etPinjaman)
-    TextView etPinjaman;
-    @Bind(R.id.etBunga)
-    TextView etBunga;
-    @Bind(R.id.etPerpanjangan)
-    TextView etPerpanjangan;
-    @Bind(R.id.etDenda)
-    TextView etDenda;
-    @Bind(R.id.etTotalTag)
-    TextView etTotalTag;
-    @Bind(R.id.etJangka)
-    TextView etJangka;
-    @Bind(R.id.etTempo)
-    TextView etTempo;
-    @Bind(R.id.btBack)
-    ImageButton btBack;
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
+
     RequestQueue requestQueue;
     StringRequest stringRequest;
     String idclient;
-    @Bind(R.id.etStatus)
+    @BindView(R.id.btBack)
+    ImageButton btBack;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.etNoApl)
+    TextView etNoApl;
+    @BindView(R.id.etPinjaman)
+    TextView etPinjaman;
+    @BindView(R.id.etBunga)
+    TextView etBunga;
+    @BindView(R.id.etPerpanjangan)
+    TextView etPerpanjangan;
+    @BindView(R.id.etDenda)
+    TextView etDenda;
+    @BindView(R.id.etTotalTag)
+    TextView etTotalTag;
+    @BindView(R.id.etTotalSudahDibayar)
+    TextView etTotalSudahDibayar;
+    @BindView(R.id.etSisaTagihan)
+    TextView etSisaTagihan;
+    @BindView(R.id.etJangka)
+    TextView etJangka;
+    @BindView(R.id.etTempo)
+    TextView etTempo;
+    @BindView(R.id.etStatus)
     TextView etStatus;
-    @Bind(R.id.lyDetail)
+    @BindView(R.id.lyDetail)
     LinearLayout lyDetail;
-    @Bind(R.id.txLunas)
+    @BindView(R.id.txLunas)
     TextView txLunas;
-    @Bind(R.id.lyLunas)
+    @BindView(R.id.lyLunas)
     LinearLayout lyLunas;
+
     private OwnProgressDialog progressDialog;
     private final int MY_SOCKET_TIMEOUT_MS = 60 * 1000;
     private SessionManager sessionManager;
@@ -113,6 +119,9 @@ public class StatusPinjaman extends AppCompatActivity {
                         dataClient.setJangkapinjaman(json.getString("pengajuan_durasi_hari"));
                         dataClient.setJatuhtempo(json.getString("pengajuan_jatuh_tempo"));
                         dataClient.setStatus(json.getString("status"));
+                        dataClient.setTotalsudahdibayar(json.getString("sudah_bayar"));
+                        dataClient.setSisatagihan(json.getString("sisa_tagihan"));
+
                         no_peng = dataClient.getNo_aplikasi();
                         etNoApl.setText(dataClient.getNo_aplikasi());
                         etPinjaman.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPinjaman()) + ",-");
@@ -120,7 +129,8 @@ public class StatusPinjaman extends AppCompatActivity {
                         etPerpanjangan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPerpanjangan()) + ",-");
                         etDenda.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getDenda()) + ",-");
                         etStatus.setText(dataClient.getStatus());
-
+                        etTotalSudahDibayar.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getTotalsudahdibayar()) + ",-");
+                        etSisaTagihan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getSisatagihan()) + ",-");
                         int angka1, angka2, angka4;
                         String hasil;
                         String angka3;
@@ -169,7 +179,7 @@ public class StatusPinjaman extends AppCompatActivity {
                     Toast.makeText(StatusPinjaman.this, "timeout", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof NoConnectionError) {
                     Toast.makeText(StatusPinjaman.this, "no connection", Toast.LENGTH_SHORT).show();
-                }else if (error.networkResponse.statusCode == 404) {
+                } else if (error.networkResponse.statusCode == 404) {
                     Toast.makeText(getApplicationContext(), "Session Expired", Toast.LENGTH_LONG).show();
                     sessionManager.logoutUser();
                     Intent intent = new Intent(StatusPinjaman.this, Login.class);
@@ -249,7 +259,7 @@ public class StatusPinjaman extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     Toast.makeText(getApplicationContext(),
-                            "Error "+error.networkResponse.statusCode + "", Toast.LENGTH_LONG).show();
+                            "Error " + error.networkResponse.statusCode + "", Toast.LENGTH_LONG).show();
                 }
 
                 progressDialog.dismiss();
