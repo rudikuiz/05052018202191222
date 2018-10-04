@@ -355,7 +355,7 @@ public class Chat extends AppCompatActivity {
                     model.setIduser(id_admin);
                     model.setNama("Admin");
                     if (sender.equals("user")) {
-                        model.setIduser(id_user);
+                        model.setIduser(sessionManager.getIdhq());
                         model.setNama(sessionManager.getNama());
                     }
                     model.setText(message);

@@ -23,7 +23,7 @@ import metis.winwin.Utils.SessionManager;
  * Created by Tambora on 26/08/2016.
  */
 public class MessagingService extends FirebaseMessagingService {
-
+    private static final String NOTIFICATION_CHANNEL = "default";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -74,7 +74,7 @@ public class MessagingService extends FirebaseMessagingService {
                     intent.putExtra("message", message);
 
                     PendingIntent pendingIntent = PendingIntent.getActivity(this, msgID, intent, PendingIntent.FLAG_ONE_SHOT);
-                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);
+                    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL);
                     notificationBuilder.setContentTitle(nama);
                     notificationBuilder.setContentText(message);
                     notificationBuilder.setSmallIcon(R.drawable.ic_chatting);

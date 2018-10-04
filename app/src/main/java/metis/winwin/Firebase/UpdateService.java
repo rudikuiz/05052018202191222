@@ -6,11 +6,14 @@ package metis.winwin.Firebase;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -36,9 +39,12 @@ import metis.winwin.Utils.SessionManager;
 
 public class UpdateService extends Service {
     private static final String LOG_TAG = "ForegroundService";
+    private static final String NOTIFICATION_CHANNEL_ID = "default";
+    private static final CharSequence NOTIFICATION_CHANNEL_NAME = "default";
+    private static final String NOTIFICATION_CHANNEL_DESC = "";
     private Handler handler = new Handler();
     private final int NOTIFICATION_ID = 1479;
-    private final int DELAY = 5000;
+    private final int DELAY = 300000;
     private FusedLocationProviderClient mFusedLocationClient;
     private SessionManager sessionManager;
     private RequestQueue requestQueue;
@@ -76,22 +82,50 @@ public class UpdateService extends Service {
 //        Bitmap icon = BitmapFactory.decodeResource(getResources(),
 //                R.drawable.ic_transparent);
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("")
-                .setTicker("")
-                .setContentText("")
-                .setContent(remoteViews)
-                .setSmallIcon(R.drawable.ic_transparent)
-                .setOngoing(true).build();
+//        Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
+//                .setContentTitle("")
+//                .setTicker("")
+//                .setContentText("")
+//                .setContent(remoteViews)
+//                .setSmallIcon(R.drawable.ic_transparent)
+//                .setPriority(NotificationCompat.PRIORITY_MAX)
+//                .setOngoing(true).build();
 
-        startForeground(NOTIFICATION_ID,
-                notification);
+//        if(Build.VERSION.SDK_INT>=26) {
+//            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+//            channel.setDescription(NOTIFICATION_CHANNEL_DESC);
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//            notificationManager.createNotificationChannel(channel);
+//        }
 
+//        startForeground(NOTIFICATION_ID,
+//                notification);
+
+        startInForeground();
 
         handler.post(updateData);
 
         return START_STICKY;
     }
+
+    private void startInForeground() {
+//        Intent notificationIntent = new Intent(this, WorkoutActivity.class);
+//        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,notificationIntent,0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_transparent)
+                .setContentTitle("")
+                .setContentText("")
+                .setTicker("");
+        Notification notification=builder.build();
+        if(Build.VERSION.SDK_INT>=26) {
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(NOTIFICATION_CHANNEL_DESC);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
 
 
     @SuppressLint("MissingPermission")

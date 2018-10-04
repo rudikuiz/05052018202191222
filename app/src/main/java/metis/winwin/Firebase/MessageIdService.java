@@ -67,7 +67,7 @@ public class MessageIdService extends FirebaseInstanceIdService {
                 String token = sharedPreferences.getString(getString(R.string.FCM_TOKEN), "");
 
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("id", sessionManager.getIduser());
+                params.put("id", sessionManager.getIdhq());
                 params.put("token", token);
 
                 AndLog.ShowLog("Datas", params.toString() + ";;" + AppConf.URL_LOGIN);

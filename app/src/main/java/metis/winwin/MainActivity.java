@@ -67,6 +67,7 @@ import metis.winwin.Model.LogModel;
 import metis.winwin.Utils.AndLog;
 import metis.winwin.Utils.AppConf;
 import metis.winwin.Utils.CallLogHelper;
+import metis.winwin.Utils.GlobalToast;
 import metis.winwin.Utils.HttpsTrustManager;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity
     private final int PROS_ID = 1357;
     private FusedLocationProviderClient mFusedLocationClient;
     Intent intent = getIntent();
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,16 +144,124 @@ public class MainActivity extends AppCompatActivity
         requestQueue = Volley.newRequestQueue(MainActivity.this);
         sessionManager = new SessionManager(MainActivity.this);
         context = getApplicationContext();
+
         setSupportActionBar(toolbar);
-
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
+        navView.setNavigationItemSelectedListener(this);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                int id = item.getItemId();
+//                Intent intent;
+//
+//                if (id == R.id.subMenu1) {
+//                    intent = new Intent(MainActivity.this, HowItWorks.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.subMenu2) {
+//                    intent = new Intent(MainActivity.this, HowItWork2Activity.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.subMenu3) {
+//                    intent = new Intent(MainActivity.this, HowItWork3Activity.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.lyNotifikasi) {
+//                    intent = new Intent(MainActivity.this, Notifikasi.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.lyHistoryPengajuan) {
+//                    intent = new Intent(MainActivity.this, HistoryPengajuan.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.lyContact) {
+//                    intent = new Intent(MainActivity.this, VoiceCallBridge.class);
+//                    intent.putExtra("iduser", "0");
+//                    intent.putExtra("nama", "Admin");
+//                    intent.putExtra("foto", "");
+//                }
+//
+//                if (id == R.id.lyChat) {
+//                    intent = new Intent(MainActivity.this, Chat.class);
+//                    intent.putExtra("iduser", "0");
+//                    intent.putExtra("nama", "Admin");
+//                    intent.putExtra("foto", "");
+//                }
+//
+//                if (id == R.id.lyStatusPinjaman) {
+//                    //                intent = new Intent(MainActivity.this, StatusPinjaman.class);
+//                    GlobalToast.ShowToast(MainActivity.this, "Maaf fitur sementara kami matikan");
+//                }
+//
+//                if (id == R.id.lyBayar) {
+//                    intent = new Intent(MainActivity.this, ConBayarSeb.class);
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.lyRequestKBayar) {
+//                    intent = new Intent(MainActivity.this, MetodePembayaran.class);
+//                    intent.putExtra("pass", "1");
+//                    startActivity(intent);
+//                }
+//
+//                if (id == R.id.lyLogout) {
+//                    String logout = txLogout.getText().toString();
+//                    if (logout.equals(getString(R.string.logout))) {
+//
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//
+//                        builder.setTitle("Logout");
+//                        builder.setMessage("Anda yakin akan logout?");
+//
+//                        builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
+//
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                                sessionManager.logoutUser();
+//                                dialog.dismiss();
+//
+//                                finish();
+//                            }
+//                        });
+//
+//                        builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
+//
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                                // Do nothing
+//                                dialog.dismiss();
+//                            }
+//                        });
+//
+//                        AlertDialog alert = builder.create();
+//                        alert.show();
+//
+//                    } else {
+//                        intent = new Intent(MainActivity.this, Login.class);
+//                        startActivity(intent);
+//                    }
+//                }
+//
+//                if (id == R.id.lyJanjiBayar) {
+//                    intent = new Intent(MainActivity.this, JanjiBayar.class);
+//                    startActivity(intent);
+//                }
+//
+//                return true;
+//            }
+//        });
 
         PinjamanFragment pinjamanFragment = new PinjamanFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -261,7 +371,7 @@ public class MainActivity extends AppCompatActivity
                 String token = sharedPreferences.getString(getString(R.string.FCM_TOKEN), "");
 
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("id", sessionManager.getIduser());
+                params.put("id", sessionManager.getIdhq());
                 params.put("token", token);
 
                 AndLog.ShowLog("Datas", params.toString() + ";;" + AppConf.URL_LOGIN);
@@ -321,9 +431,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
 //        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -391,7 +501,8 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.lyStatusPinjaman:
-                intent = new Intent(MainActivity.this, StatusPinjaman.class);
+//                intent = new Intent(MainActivity.this, StatusPinjaman.class);
+                GlobalToast.ShowToast(MainActivity.this, "Maaf fitur sementara kami matikan");
                 break;
 
             case R.id.lyBayar:

@@ -102,7 +102,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> 
 
         final ChatModel value = dataSet.get(position);
         int layout = 0;
-        if (value.getIduser().equals(sessionManager.getIduser())) {
+        if (value.getIduser().equals(sessionManager.getIdhq())) {
             layout = 1;
         }
         return layout;
