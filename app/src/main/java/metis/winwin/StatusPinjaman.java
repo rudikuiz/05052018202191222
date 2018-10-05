@@ -117,9 +117,6 @@ public class StatusPinjaman extends AppCompatActivity {
                         dataClient.setJangkapinjaman(json.getString("pengajuan_durasi_hari"));
                         dataClient.setJatuhtempo(json.getString("pengajuan_jatuh_tempo"));
                         dataClient.setStatus(json.getString("status"));
-                        dataClient.setTotalsudahdibayar(json.getString("sudah_bayar"));
-                        dataClient.setSisatagihan(json.getString("sisa_tagihan"));
-
                         no_peng = dataClient.getNo_aplikasi();
                         etNoApl.setText(dataClient.getNo_aplikasi());
                         etPinjaman.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPinjaman()) + ",-");
@@ -127,6 +124,8 @@ public class StatusPinjaman extends AppCompatActivity {
                         etPerpanjangan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPerpanjangan()) + ",-");
                         etDenda.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getDenda()) + ",-");
                         etStatus.setText(dataClient.getStatus());
+                        etTotalSudahDibayar.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getTotalsudahdibayar()) + ",-");
+                        etSisaTagihan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getSisatagihan()) + ",-");
                         etTotalSudahDibayar.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getTotalsudahdibayar()) + ",-");
                         etSisaTagihan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getSisatagihan()) + ",-");
 

@@ -4,7 +4,9 @@ package metis.winwin.Model;
  */
 
 public class StatusPinjamanMode {
+
     String no_aplikasi, pinjaman, bunga, perpanjangan, denda, totaltagihan,  totalsudahdibayar, sisatagihan, jangkapinjaman, jatuhtempo, status;
+
 
     public StatusPinjamanMode() {
     }

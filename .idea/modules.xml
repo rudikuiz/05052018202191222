@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Winwin20180605.iml" filepath="$PROJECT_DIR$/Winwin20180605.iml" />
+      <module fileurl="file://D:\(AndroidProject)\IQBAL\winwinclient\Winwin20180605.iml" filepath="D:\(AndroidProject)\IQBAL\winwinclient\Winwin20180605.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/winwinclient.iml" filepath="$PROJECT_DIR$/winwinclient.iml" />
     </modules>
   </component>
 </project>
