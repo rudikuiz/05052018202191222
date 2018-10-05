@@ -44,6 +44,7 @@ import metis.winwin.Utils.AppConf;
 import metis.winwin.Utils.DataPinjamanManager;
 import metis.winwin.Utils.DateTool;
 import metis.winwin.Utils.DecimalsFormat;
+import metis.winwin.Utils.GlobalToast;
 import metis.winwin.Utils.SessionManager;
 import metis.winwin.Utils.VolleyHttp;
 
@@ -87,6 +88,8 @@ public class PinjamanFragment extends Fragment {
     Button linF;
     @Bind(R.id.btAktifasi)
     Button btAktifasi;
+    @Bind(R.id.txPemberitahuan)
+    TextView txPemberitahuan;
 
     private double sJumlah, total_byr, sBunga;
     private int sPeriode;
@@ -424,57 +427,59 @@ public class PinjamanFragment extends Fragment {
             case R.id.txTanggal:
                 break;
             case R.id.btPinjam:
-                if (sessionManager.checkLogin()) {
-                    int error=0;
-                    String ratingNow = sessionManager.getRating();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-                    builder.setTitle("Pemberitahuan");
-                    if (ratingNow.equals("5")) {
-                        builder.setMessage(getString(R.string.rating_5));
-                    } else if (ratingNow.equals("4")) {
-                        if (skors.isEmpty()){
-                            Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
-                            formPengajuan.putExtra("jumlah", sJumlah + "");
-                            formPengajuan.putExtra("periode", sPeriode + "");
-                            formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
-                            formPengajuan.putExtra("total_byr", total_byr + "");
-                            startActivity(formPengajuan);
-                            error=1;
-                        }else {
-                            builder.setMessage(getString(R.string.rating_4, skors));
-                        }
-                    } else {
-                        Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
-                        formPengajuan.putExtra("jumlah", sJumlah + "");
-                        formPengajuan.putExtra("periode", sPeriode + "");
-                        formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
-                        formPengajuan.putExtra("total_byr", total_byr + "");
-                        startActivity(formPengajuan);
-                        error=1;
-                    }
+                GlobalToast.ShowToast(mActivity, "Maaf fitur sementara kami matikan");
 
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-
-                    AlertDialog alert = builder.create();
-                    if (error==0){
-                        alert.show();
-                    }
-
-
-                } else {
-                    Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
-                    formPengajuan.putExtra("jumlah", sJumlah + "");
-                    formPengajuan.putExtra("periode", sPeriode + "");
-                    formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
-                    formPengajuan.putExtra("total_byr", total_byr + "");
-                    startActivity(formPengajuan);
-                }
+//                if (sessionManager.checkLogin()) {
+//                    int error = 0;
+//                    String ratingNow = sessionManager.getRating();
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+//                    builder.setTitle("Pemberitahuan");
+//                    if (ratingNow.equals("5")) {
+//                        builder.setMessage(getString(R.string.rating_5));
+//                    } else if (ratingNow.equals("4")) {
+//                        if (skors.isEmpty()) {
+//                            Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+//                            formPengajuan.putExtra("jumlah", sJumlah + "");
+//                            formPengajuan.putExtra("periode", sPeriode + "");
+//                            formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+//                            formPengajuan.putExtra("total_byr", total_byr + "");
+//                            startActivity(formPengajuan);
+//                            error = 1;
+//                        } else {
+//                            builder.setMessage(getString(R.string.rating_4, skors));
+//                        }
+//                    } else {
+//                        Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+//                        formPengajuan.putExtra("jumlah", sJumlah + "");
+//                        formPengajuan.putExtra("periode", sPeriode + "");
+//                        formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+//                        formPengajuan.putExtra("total_byr", total_byr + "");
+//                        startActivity(formPengajuan);
+//                        error = 1;
+//                    }
+//
+//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    });
+//
+//
+//                    AlertDialog alert = builder.create();
+//                    if (error == 0) {
+//                        alert.show();
+//                    }
+//
+//
+//                } else {
+//                    Intent formPengajuan = new Intent(getActivity(), FormPengajuan.class);
+//                    formPengajuan.putExtra("jumlah", sJumlah + "");
+//                    formPengajuan.putExtra("periode", sPeriode + "");
+//                    formPengajuan.putExtra("jatuh_tempo", txTanggal.getText().toString());
+//                    formPengajuan.putExtra("total_byr", total_byr + "");
+//                    startActivity(formPengajuan);
+//                }
 
 
                 break;
@@ -515,10 +520,16 @@ public class PinjamanFragment extends Fragment {
 
 
             CheckDisetujui();
+            txPemberitahuan.setVisibility(View.GONE);
+            txPemberitahuan.setText(null);
+            btPinjam.setVisibility(View.VISIBLE);
             btLogin.setVisibility(View.GONE);
             linF.setVisibility(View.GONE);
         } else {
             getKODE();
+            btPinjam.setVisibility(View.GONE);
+            txPemberitahuan.setVisibility(View.VISIBLE);
+            txPemberitahuan.setText(R.string.pemberitahuan);
             linF.setVisibility(View.VISIBLE);
         }
 

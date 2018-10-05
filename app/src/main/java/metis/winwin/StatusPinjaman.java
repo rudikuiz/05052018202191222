@@ -67,6 +67,10 @@ public class StatusPinjaman extends AppCompatActivity {
     TextView txLunas;
     @Bind(R.id.lyLunas)
     LinearLayout lyLunas;
+    @Bind(R.id.etTotalSudahDibayar)
+    TextView etTotalSudahDibayar;
+    @Bind(R.id.etSisaTagihan)
+    TextView etSisaTagihan;
     private OwnProgressDialog progressDialog;
     private final int MY_SOCKET_TIMEOUT_MS = 60 * 1000;
     private SessionManager sessionManager;
@@ -113,6 +117,9 @@ public class StatusPinjaman extends AppCompatActivity {
                         dataClient.setJangkapinjaman(json.getString("pengajuan_durasi_hari"));
                         dataClient.setJatuhtempo(json.getString("pengajuan_jatuh_tempo"));
                         dataClient.setStatus(json.getString("status"));
+                        dataClient.setTotalsudahdibayar(json.getString("sudah_bayar"));
+                        dataClient.setSisatagihan(json.getString("sisa_tagihan"));
+
                         no_peng = dataClient.getNo_aplikasi();
                         etNoApl.setText(dataClient.getNo_aplikasi());
                         etPinjaman.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPinjaman()) + ",-");
@@ -120,6 +127,8 @@ public class StatusPinjaman extends AppCompatActivity {
                         etPerpanjangan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getPerpanjangan()) + ",-");
                         etDenda.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getDenda()) + ",-");
                         etStatus.setText(dataClient.getStatus());
+                        etTotalSudahDibayar.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getTotalsudahdibayar()) + ",-");
+                        etSisaTagihan.setText("Rp. " + DecimalsFormat.priceWithoutDecimal(dataClient.getSisatagihan()) + ",-");
 
                         int angka1, angka2, angka4;
                         String hasil;
@@ -169,7 +178,7 @@ public class StatusPinjaman extends AppCompatActivity {
                     Toast.makeText(StatusPinjaman.this, "timeout", Toast.LENGTH_SHORT).show();
                 } else if (error instanceof NoConnectionError) {
                     Toast.makeText(StatusPinjaman.this, "no connection", Toast.LENGTH_SHORT).show();
-                }else if (error.networkResponse.statusCode == 404) {
+                } else if (error.networkResponse.statusCode == 404) {
                     Toast.makeText(getApplicationContext(), "Session Expired", Toast.LENGTH_LONG).show();
                     sessionManager.logoutUser();
                     Intent intent = new Intent(StatusPinjaman.this, Login.class);
@@ -249,7 +258,7 @@ public class StatusPinjaman extends AppCompatActivity {
                     startActivity(intent);
                 } else {
                     Toast.makeText(getApplicationContext(),
-                            "Error "+error.networkResponse.statusCode + "", Toast.LENGTH_LONG).show();
+                            "Error " + error.networkResponse.statusCode + "", Toast.LENGTH_LONG).show();
                 }
 
                 progressDialog.dismiss();

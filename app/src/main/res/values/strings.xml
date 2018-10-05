@@ -356,5 +356,8 @@ One day, the king summon all of his children into his room. At that moment he wa
     <string name="carapeng">Cara Pengajuan</string>
     <string name="carapembvi">Cara Pembayaran via Virtual Account</string>
     <string name="transferke">Transfer pembayaran ke nomor rekening :</string>
+    <string name="sudahdibayar">Total Sudah Dibayar</string>
+    <string name="sisatagihan">Sisa Tagihan</string>
+    <string name="pemberitahuan">Apabila ingin melakukan pinjaman, harap login terlebih dahulu.</string>
 
 </resources>

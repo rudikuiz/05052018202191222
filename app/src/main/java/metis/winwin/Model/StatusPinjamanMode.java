@@ -4,7 +4,7 @@ package metis.winwin.Model;
  */
 
 public class StatusPinjamanMode {
-    String no_aplikasi, pinjaman, bunga, perpanjangan, denda, totaltagihan, jangkapinjaman, jatuhtempo, status;
+    String no_aplikasi, pinjaman, bunga, perpanjangan, denda, totaltagihan,  totalsudahdibayar, sisatagihan, jangkapinjaman, jatuhtempo, status;
 
     public StatusPinjamanMode() {
     }
@@ -90,5 +90,21 @@ public class StatusPinjamanMode {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getTotalsudahdibayar() {
+        return totalsudahdibayar;
+    }
+
+    public void setTotalsudahdibayar(String totalsudahdibayar) {
+        this.totalsudahdibayar = totalsudahdibayar;
+    }
+
+    public String getSisatagihan() {
+        return sisatagihan;
+    }
+
+    public void setSisatagihan(String sisatagihan) {
+        this.sisatagihan = sisatagihan;
     }
 }
